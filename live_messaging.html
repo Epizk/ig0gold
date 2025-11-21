@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ig0) live messaging</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom black and white theme (Copied from ig0 main) */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&display=swap');
+        /* NEW: Import Comfortaa font */
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap');
+        /* NEW: Import Comic Sans for Tuff theme */
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap');
+        
+        /* --- CSS VARIABLES FOR THEME --- */
+        :root {
+            /* Original theme colors */
+            --primary-color: #525252;
+            --accent-color: #fca5a5;
+            --dark-card-bg: #262626;
+            --light-input-bg: #404040;
+            --success-color: #4ade80;
+            --danger-color: #f87171;
+            
+            /* NEW Generic Vars (set to default theme) */
+            --bg-color: #000000;
+            --text-color: #FFFFFF;
+            --text-color-light: #9ca3af; /* gray-400 */
+            --text-color-dark: #000000;
+            --card-bg: var(--dark-card-bg);
+            --sidebar-bg: var(--dark-card-bg);
+            --input-bg: var(--light-input-bg);
+            --border-color: var(--primary-color);
+            --message-outgoing-bg: var(--accent-color);
+            --message-outgoing-text: var(--text-color-dark);
+            --message-incoming-bg: var(--light-input-bg);
+            --message-incoming-text: var(--text-color);
+            --contact-hover-bg: var(--primary-color);
+            --contact-active-bg: var(--light-input-bg);
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            color: var(--text-color); /* MODIFIED */
+            background-color: var(--bg-color); /* MODIFIED */
+            overflow: hidden; 
+            /* NEW: Add styles for centering the window */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            background-color: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            border: 2px solid #000000;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #000000;
+        }
+
+        /* --- FALLING SNOW ANIMATION --- */
+        @keyframes falling-snow {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(0vh); }
+        }
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .snow-layer-particle { content: ""; position: absolute; width: 1px; height: 1px; background: transparent; top: 0; left: 0; }
+        .snow-layer-1 { animation: falling-snow 15s linear infinite; box-shadow: 1vw 10vh #fff, 3vw 120vh #fff, 5vw 30vh #fff, 7vw 140vh #fff, 9vw 50vh #fff, 11vw 160vh #fff, 13vw 70vh #fff, 15vw 180vh #fff, 17vw 90vh #fff, 19vw 200vh #fff, 21vw 5vh #fff, 23vw 115vh #fff, 25vw 25vh #fff, 27vw 135vh #fff, 29vw 45vh #fff, 31vw 155vh #fff, 33vw 65vh #fff, 35vw 175vh #fff, 37vw 85vh #fff, 39vw 195vh #fff, 41vw 15vh #fff, 43vw 125vh #fff, 45vw 35vh #fff, 47vw 145vh #fff, 49vw 55vh #fff, 51vw 165vh #fff, 53vw 75vh #fff, 55vw 185vh #fff, 57vw 95vh #fff, 59vw 10vh #fff, 61vw 110vh #fff, 63vw 20vh #fff, 65vw 130vh #fff, 67vw 40vh #fff, 69vw 150vh #fff, 71vw 60vh #fff, 73vw 170vh #fff, 75vw 80vh #fff, 77vw 190vh #fff, 79vw 100vh #fff, 81vw 15vh #fff, 83vw 125vh #fff, 85vw 35vh #fff, 87vw 145vh #fff, 89vw 55vh #fff, 91vw 165vh #fff, 93vw 75vh #fff, 95vw 185vh #fff, 97vw 95vh #fff, 99vw 20vh #fff, 2vw 130vh #fff, 4vw 45vh #fff, 6vw 155vh #fff, 8vw 65vh #fff, 10vw 175vh #fff, 12vw 85vh #fff, 14vw 195vh #fff, 16vw 15vh #fff, 18vw 125vh #fff, 20vw 35vh #fff, 22vw 145vh #fff, 24vw 55vh #fff, 26vw 165vh #fff, 28vw 75vh #fff, 30vw 185vh #fff, 32vw 95vh #fff, 34vw 10vh #fff, 36vw 110vh #fff, 38vw 20vh #fff, 40vw 130vh #fff, 42vw 40vh #fff, 44vw 150vh #fff, 46vw 60vh #fff, 48vw 170vh #fff, 50vw 80vh #fff, 52vw 190vh #fff, 54vw 100vh #fff, 56vw 15vh #fff, 58vw 125vh #fff, 60vw 35vh #fff, 62vw 145vh #fff, 64vw 55vh #fff, 66vw 165vh #fff, 68vw 75vh #fff, 70vw 185vh #fff, 72vw 95vh #fff, 74vw 10vh #fff, 76vw 110vh #fff, 78vw 20vh #fff, 80vw 130vh #fff, 82vw 40vh #fff, 84vw 150vh #fff, 86vw 60vh #fff, 88vw 170vh #fff, 90vw 80vh #fff, 92vw 190vh #fff, 94vw 100vh #fff, 96vw 15vh #fff, 98vw 125vh #fff, 100vw 35vh #fff; width: 1px; height: 1px; }
+        .snow-layer-2 { animation: falling-snow 20s linear infinite; opacity: 0.7; box-shadow: 4vw 15vh 0 1px #fff, 8vw 135vh 0 1px #fff, 12vw 45vh 0 1px #fff, 16vw 165vh 0 1px #fff, 20vw 75vh 0 1px #fff, 24vw 185vh 0 1px #fff, 28vw 95vh 0 1px #fff, 32vw 10vh 0 1px #fff, 36vw 120vh 0 1px #fff, 40vw 30vh 0 1px #fff, 44vw 140vh 0 1px #fff, 48vw 50vh 0 1px #fff, 52vw 160vh 0 1px #fff, 56vw 70vh 0 1px #fff, 60vw 180vh 0 1px #fff, 64vw 90vh 0 1px #fff, 68vw 5vh 0 1px #fff, 72vw 115vh 0 1px #fff, 76vw 25vh 0 1px #fff, 80vw 135vh 0 1px #fff, 84vw 45vh 0 1px #fff, 88vw 155vh 0 1px #fff, 92vw 65vh 0 1px #fff, 96vw 175vh 0 1px #fff, 100vw 85vh 0 1px #fff, 2vw 195vh 0 1px #fff, 10vw 105vh 0 1px #fff, 18vw 15vh 0 1px #fff, 26vw 125vh 0 1px #fff, 34vw 35vh 0 1px #fff, 42vw 145vh 0 1px #fff, 50vw 55vh 0 1px #fff, 58vw 165vh 0 1px #fff, 66vw 75vh 0 1px #fff, 74vw 185vh 0 1px #fff, 82vw 95vh 0 1px #fff, 90vw 10vh 0 1px #fff, 98vw 120vh 0 1px #fff, 14vw 100vh 0 1px #fff, 22vw 10vh 0 1px #fff, 30vw 120vh 0 1px #fff, 38vw 30vh 0 1px #fff, 46vw 140vh 0 1px #fff; width: 2px; height: 2px; }
+        .snow-layer-3 { animation: falling-snow 30s linear infinite; opacity: 0.5; box-shadow: 5vw 20vh 0 2px #fff, 15vw 140vh 0 2px #fff, 25vw 50vh 0 2px #fff, 35vw 170vh 0 2px #fff, 45vw 80vh 0 2px #fff, 55vw 190vh 0 2px #fff, 65vw 10vh 0 2px #fff, 75vw 130vh 0 2px #fff, 85vw 40vh 0 2px #fff, 95vw 160vh 0 2px #fff, 10vw 70vh 0 2px #fff, 20vw 180vh 0 2px #fff, 30vw 90vh 0 2px #fff, 40vw 5vh 0 2px #fff, 50vw 115vh 0 2px #fff, 60vw 25vh 0 2px #fff, 70vw 145vh 0 2px #fff, 80vw 55vh 0 2px #fff, 90vw 175vh 0 2px #fff, 3vw 150vh 0 2px #fff, 23vw 60vh 0 2px #fff, 43vw 180vh 0 2px #fff, 63vw 90vh 0 2px #fff, 83vw 25vh 0 2px #fff, 93vw 155vh 0 2px #fff; width: 3px; height: 3px; }
+        /* --- END SNOW ANIMATION --- */
+
+        /* --- THEME STYLES (Using CSS Variables) --- */
+        #main-container {
+            /* NEW: Set position for dragging */
+            position: absolute;
+            /* Remove centering styles */
+            margin: 0; 
+        }
+
+        .container-card {
+            background-color: var(--card-bg); /* MODIFIED */
+            border: 1px solid var(--border-color); /* MODIFIED */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+        .input-field, .select-field {
+            background-color: var(--input-bg); /* MODIFIED */
+            border: 1px solid var(--border-color); /* MODIFIED */
+            color: var(--text-color); /* MODIFIED */
+        }
+        .select-field {
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.2em 1.2em;
+            padding-right: 2rem;
+        }
+
+        .theme-button {
+            background-color: var(--input-bg); /* MODIFIED */
+            border: 1px solid var(--border-color); /* MODIFIED */
+            color: var(--text-color); /* MODIFIED */
+            transition: all 0.2s;
+        }
+        .theme-button:hover {
+            background-color: var(--contact-hover-bg); /* MODIFIED */
+            color: var(--text-color); /* MODIFIED */
+            border-color: #737373; 
+        }
+        .theme-button:disabled {
+            background-color: #1a1a1a;
+            color: #555;
+            border-color: #333;
+            cursor: not-allowed;
+        }
+        /* Friend request buttons */
+        .success-button {
+            background-color: var(--success-color);
+            color: #000;
+            transition: all 0.2s;
+        }
+        .success-button:hover { background-color: #22c55e; }
+        .danger-button {
+            background-color: var(--danger-color);
+            color: #000;
+            transition: all 0.2s;
+        }
+        .danger-button:hover { background-color: #ef4444; }
+
+        /* Sidebar */
+        aside {
+            background-color: var(--sidebar-bg);
+            border-color: var(--border-color);
+        }
+
+        /* --- MESSAGING APP STYLES --- */
+        .message-incoming,
+        .message-outgoing,
+        .message-admin { 
+            position: relative; 
+            max-width: 80%; 
+        }
+
+        .message-incoming {
+            background-color: var(--message-incoming-bg); /* MODIFIED */
+            color: var(--message-incoming-text); /* MODIFIED */
+        }
+        .message-outgoing {
+            background-color: var(--message-outgoing-bg); /* MODIFIED */
+            color: var(--message-outgoing-text); /* MODIFIED */
+        }
+        
+        /* --- NEW: Special User Bubble Style --- */
+        .message-special {
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            color: #ffffff; /* White text */
+        }
+        .message-special .reply-btn-incoming { /* Make reply button readable */
+            color: #ffffff;
+        }
+        .message-special .text-gray-400 { /* Make timestamp readable */
+            color: #e5e7eb; /* gray-200 */
+        }
+        /* --- END NEW --- */
+
+        .contact-item {
+            border-bottom: 1px solid var(--border-color); /* MODIFIED */
+            transition: all 0.2s;
+        }
+        .contact-item:hover {
+            background-color: var(--contact-hover-bg); /* MODIFIED */
+        }
+        .contact-item.active {
+            background-color: var(--contact-active-bg); /* MODIFIED */
+            border-left: 3px solid var(--message-outgoing-bg); /* MODIFIED */
+        }
+        
+        /* REMOVED: Pending item style */
+
+        /* --- REPLY FEATURE STYLES --- */
+        .reply-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            padding: 2px;
+            border-radius: 99px; 
+            background-color: rgba(0, 0, 0, 0.1);
+            opacity: 0; 
+            transition: opacity 0.2s;
+        }
+        .message-incoming:hover .reply-btn,
+        .message-outgoing:hover .reply-btn,
+        .message-admin:hover .reply-btn {
+            opacity: 1; 
+        }
+        .reply-btn:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .reply-btn-outgoing { 
+            color: var(--message-outgoing-text); /* MODIFIED */
+        }
+        .reply-btn-incoming {
+            color: var(--message-incoming-text); /* MODIFIED */
+        }
+        .reply-snippet {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 2px solid var(--message-outgoing-bg); /* MODIFIED */
+            padding: 4px 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            opacity: 0.8;
+        }
+        .message-incoming .reply-snippet {
+            border-left-color: var(--border-color);
+        }
+
+        /* --- Text Control Styles --- */
+        #text-controls-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: var(--sidebar-bg); /* MODIFIED */
+            border-radius: 6px;
+        }
+        .font-control-btn {
+            background-color: var(--input-bg); /* MODIFIED */
+            border: 1px solid var(--border-color); /* MODIFIED */
+            color: var(--text-color); /* MODIFIED */
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .font-control-btn:hover {
+            background-color: var(--contact-hover-bg); /* MODIFIED */
+        }
+        .font-control-btn.toggled { 
+            background-color: var(--message-outgoing-bg); /* MODIFIED */
+            color: var(--message-outgoing-text); /* MODIFIED */
+            border-color: var(--message-outgoing-bg); /* MODIFIED */
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 50;
+        }
+        .modal-content {
+            background-color: var(--card-bg); /* MODIFIED */
+            border: 1px solid var(--border-color); /* MODIFIED */
+            z-index: 100;
+        }
+        
+        /* --- NEW: EMOJI PANEL --- */
+        #emoji-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .emoji-btn {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1.25rem; /* Make emojis bigger */
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .emoji-btn:hover {
+            background-color: var(--contact-hover-bg);
+        }
+        .emoji-btn.sm { /* For text emoticons */
+            font-size: 0.875rem;
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+        
+        /* --- NEW THEME DEFINITIONS --- */
+
+        /* Darker Mode */
+        body.theme-darker {
+            --card-bg: #111111;
+            --sidebar-bg: #111111;
+            --input-bg: #222222;
+            --border-color: #333333;
+            --message-incoming-bg: #222222;
+            --contact-hover-bg: #2c2c2c;
+            --contact-active-bg: #222222;
+        }
+
+        /* Light Mode */
+        body.theme-light {
+            --bg-color: #F0F0F0;
+            --text-color: #000000;
+            --text-color-light: #555555;
+            --card-bg: #FFFFFF;
+            --sidebar-bg: #FFFFFF;
+            --input-bg: #EAEAEA;
+            --border-color: #CCCCCC;
+            --message-outgoing-bg: #D96A6A; /* Darker red */
+            --message-outgoing-text: #FFFFFF;
+            --message-incoming-bg: #EAEAEA;
+            --message-incoming-text: #000000;
+            --contact-hover-bg: #E0E0E0;
+            --contact-active-bg: #DCDCDC;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+        }
+        .theme-light .select-field {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+        .theme-light .message-outgoing .reply-btn-outgoing,
+        .theme-light .message-outgoing .text-black\/60 {
+            color: #FFFFFF;
+            opacity: 0.7;
+        }
+        .theme-light .message-outgoing .text-gray-700 {
+            color: #F0F0F0;
+        }
+        .theme-light .message-incoming .reply-btn-incoming {
+            color: #000000;
+        }
+        .theme-light #text-controls-bar {
+            background-color: #F9F9F9;
+        }
+
+        /* Discord Light Theme */
+        body.theme-discord {
+            font-family: 'Arial', sans-serif;
+            --bg-color: #F2F3F5;
+            --text-color: #060607;
+            --text-color-light: #4E5058;
+            --card-bg: #FFFFFF;
+            --sidebar-bg: #EBECEF;
+            --input-bg: #E3E5E8;
+            --border-color: transparent;
+            --message-outgoing-bg: #5865F2; /* Blurple */
+            --message-outgoing-text: #FFFFFF;
+            --message-incoming-bg: #EBECEF;
+            --message-incoming-text: #060607;
+            --contact-hover-bg: #DCDDDE;
+            --contact-active-bg: #D0D1D2;
+            --success-color: #2DC770;
+            --danger-color: #F23F43;
+        }
+        .theme-discord .select-field {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+        .theme-discord .message-outgoing .reply-btn-outgoing,
+        .theme-discord .message-outgoing .text-black\/60 {
+            color: #FFFFFF;
+            opacity: 0.7;
+        }
+        .theme-discord .message-outgoing .text-gray-700 {
+            color: #F0F0F0;
+        }
+        .theme-discord .message-incoming .reply-btn-incoming {
+            color: #000000;
+        }
+        .theme-discord .rounded-lg { border-radius: 0.25rem; } /* Discord uses smaller radius */
+        .theme-discord #text-controls-bar {
+            background-color: #EBECEF;
+        }
+
+        /* Tuff (2008) Theme - "Improved" (Made worse) */
+        body.theme-tuff {
+            font-family: 'Comic Sans MS', cursive !important;
+            --bg-color: #0000FF;
+            --text-color: #FFFF00;
+            --text-color-light: #FF00FF;
+            --card-bg: #C0C0C0;
+            --sidebar-bg: #C0C0C0;
+            --input-bg: #FFFFFF;
+            --border-color: #808080;
+            --message-outgoing-bg: #FF00FF;
+            --message-outgoing-text: #000000;
+            --message-incoming-bg: #00FF00;
+            --message-incoming-text: #000000;
+            --contact-hover-bg: #FF0000;
+            --contact-active-bg: #FF0000;
+            --success-color: #00FF00;
+            --danger-color: #FF0000;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="5" height="5" fill="red"/><rect x="5" y="5" width="5" height="5" fill="yellow"/></svg>') !important;
+            background-size: 10px 10px !important;
+        }
+        .theme-tuff .container-card,
+        .theme-tuff .theme-button,
+        .theme-tuff .input-field,
+        .theme-tuff .select-field,
+        .theme-tuff .modal-content,
+        .theme-tuff .emoji-btn { /* Added emoji btn */
+            border-style: outset !important;
+            border-width: 3px !important;
+            color: #000 !important;
+        }
+        .theme-tuff .theme-button:hover,
+        .theme-tuff .emoji-btn:hover { /* Added emoji btn */
+            border-style: inset !important;
+        }
+        .theme-tuff p, .theme-tuff h3, .theme-tuff span, .theme-tuff label, .theme-tuff div, .theme-tuff a, .theme-tuff button, .theme-tuff input, .theme-tuff option, .theme-tuff select {
+            font-family: 'Comic Sans MS', cursive !important;
+        }
+        /* Make text *inside* card black */
+        .theme-tuff .container-card, .theme-tuff .modal-content {
+            color: #000 !important;
+        }
+        .theme-tuff .container-card p, .theme-tuff .container-card h3, .theme-tuff .container-card span, .theme-tuff .container-card label, .theme-tuff .container-card div, .theme-tuff .container-card a {
+             color: #000 !important;
+        }
+        /* Override for message bubbles */
+        .theme-tuff .message-outgoing p, .theme-tuff .message-outgoing span, .theme-tuff .message-incoming p, .theme-tuff .message-incoming span {
+             color: #000 !important;
+             text-shadow: 1px 1px 0px #00FFFF; /* Unreadable cyan shadow */
+        }
+        .theme-tuff .reply-btn { color: #000 !important; }
+        /* Override for global text (outside card) */
+        body.theme-tuff {
+            color: #FFFF00 !important; /* Yellow text on blue bg */
+        }
+        .theme-tuff #snow-container { display: none; }
+        .theme-tuff .select-field {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+
+        /* NEW: Ocean Theme */
+        body.theme-ocean {
+            --bg-color: #0B192E;
+            --text-color: #E0F2F7;
+            --text-color-light: #99CDEE;
+            --card-bg: #0D2B4E;
+            --sidebar-bg: #0D2B4E;
+            --input-bg: #1A4A8A;
+            --border-color: #3870C0;
+            --message-outgoing-bg: #38B2AC;
+            --message-outgoing-text: #FFFFFF;
+            --message-incoming-bg: #1A4A8A;
+            --message-incoming-text: #E0F2F7;
+            --contact-hover-bg: #3870C0;
+            --contact-active-bg: #1A4A8A;
+            --success-color: #38B2AC;
+            --danger-color: #E53E3E;
+        }
+        .theme-ocean .select-field {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2399CDEE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+        
+        /* NEW: Forest Theme */
+        body.theme-forest {
+            font-family: 'Comfortaa', cursive;
+            --bg-color: #1A201C;
+            --text-color: #E8E8E3;
+            --text-color-light: #A8A89A;
+            --card-bg: #2F3B2C;
+            --sidebar-bg: #2F3B2C;
+            --input-bg: #4A5548;
+            --border-color: #5C6E58;
+            --message-outgoing-bg: #8F997E;
+            --message-outgoing-text: #000000;
+            --message-incoming-bg: #4A5548;
+            --message-incoming-text: #E8E8E3;
+            --contact-hover-bg: #5C6E58;
+            --contact-active-bg: #4A5548;
+            --success-color: #8F997E;
+            --danger-color: #C05A5A;
+        }
+        .theme-forest .select-field {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A8A89A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+
+        /* --- NEW: Sunset Theme --- */
+        body.theme-sunset {
+            --bg-color: #2C2A4A;
+            --text-color: #F5E9E2;
+            --text-color-light: #A8A3D3;
+            --card-bg: #4F4A6D;
+            --sidebar-bg: #4F4A6D;
+            --input-bg: #3E3A5A;
+            --border-color: #6A648F;
+            --message-outgoing-bg: #E87A5E;
+            --message-outgoing-text: #000000;
+            --message-incoming-bg: #3E3A5A;
+            --message-incoming-text: #F5E9E2;
+            --contact-hover-bg: #6A648F;
+            --contact-active-bg: #3E3A5A;
+            --success-color: #E87A5E;
+            --danger-color: #D45D5D;
+        }
+        .theme-sunset .select-field {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A8A3D3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+
+        /* --- NEW: Terminal Theme --- */
+        body.theme-terminal {
+            --bg-color: #000000;
+            --text-color: #00FF00;
+            --text-color-light: #008000;
+            --card-bg: #0A0A0A;
+            --sidebar-bg: #0A0A0A;
+            --input-bg: #1A1A1A;
+            --border-color: #003300;
+            --message-outgoing-bg: #00FF00;
+            --message-outgoing-text: #000000;
+            --message-incoming-bg: #1A1A1A;
+            --message-incoming-text: #00FF00;
+            --contact-hover-bg: #003300;
+            --contact-active-bg: #1A1A1A;
+            --success-color: #00FF00;
+            --danger-color: #FF0000;
+        }
+        .theme-terminal .select-field {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23008000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+        .theme-terminal #snow-container { display: none; }
+        
+        /* --- END THEME DEFINITIONS --- */
+        
+        /* --- NEW: Style for the user info list --- */
+        #user-info-modal-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+        }
+        #user-info-modal-list li {
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+        #user-info-modal-list li span {
+            font-size: 0.75rem;
+            color: var(--text-color-light);
+            display: block;
+        }
+        
+        /* NEW: Style for active users list */
+        #active-users-list {
+            list-style-type: none;
+            padding: 0;
+            max-height: 40vh;
+            overflow-y: auto;
+        }
+        #active-users-list li {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        #active-users-list li:hover {
+            background-color: var(--input-bg);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4"> <!-- Body styles are now the default for centering -->
+
+    <!-- This div IS the falling snow -->
+    <div id="snow-container">
+        <div class="snow-layer-particle snow-layer-1"></div>
+        <div class="snow-layer-particle snow-layer-2"></div>
+        <div class="snow-layer-particle snow-layer-3"></div>
+    </div>
+
+        <!-- Main App Container -->
+    <!-- MODIFIED: Removed centering classes, added position: absolute -->
+    <div id="main-container" class="container-card w-full h-[80vh] md:h-[70vh] rounded-lg flex flex-col overflow-hidden" 
+         style="max-width: 56rem; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        
+        <!-- Header / Title Bar -->
+        <!-- NEW: Added cursor-move for dragging -->
+        <header id="main-header" class="flex items-center justify-between p-4 border-b border-[var(--primary-color)] flex-shrink-0 gap-4" style="cursor: move;">
+            <!-- Left Side: Username -->
+            <!-- MODIFIED: Removed input and "Done" button, added "Change Username" button -->
+            <div class="flex-1 flex space-x-2">
+                <button id="change-username-btn" class="theme-button py-2 px-4 rounded-md text-xs font-semibold">
+                    Change Username
+                </button>
+            </div>
+            
+            <!-- Right Side: ID and Back Button -->
+            <div class="flex items-center space-x-4">
+                <div class="text-xs text-gray-400 text-right">
+                    <!-- Nameplate: Shows Username, reveals ID on hover -->
+                    <div id="nameplate" class="cursor-pointer">
+                        <span id="user-id-display" class="font-bold text-white">Loading...</span>
+                        <!-- MODIFIED: "Friend Code" -> "ID" -->
+                        <span id="friend-code-display" class="text-gray-400 block">(ID: ...)</span>
+                    </div>
+                    <!-- REMOVED: "ALL DATA CLEARS" text -->
+                </div>
+                
+                <!-- Group all buttons -->
+                <div class="flex items-center space-x-2">
+                    <!-- Vertical Resize -->
+                    <button id="resize-down-btn" class="theme-button py-1 px-2 rounded-md text-xs font-semibold" title="Make Shorter">-</button>
+                    <button id="resize-up-btn" class="theme-button py-1 px-2 rounded-md text-xs font-semibold" title="Make Taller">+</button>
+                    
+                    <!-- Horizontal Resize -->
+                    <button id="resize-shrink-btn" class="theme-button py-1 px-2 rounded-md text-xs font-semibold" title="Make Narrower">&lt;</button>
+                    <button id="resize-grow-btn" class="theme-button py-1 px-2 rounded-md text-xs font-semibold" title="Make Wider">&gt;</button>
+                    
+                    <!-- NEW: Fullscreen Button -->
+                    <button id="fullscreen-btn" class="theme-button py-1 px-2 rounded-md text-xs font-semibold" title="Maximize Window">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                    </button>
+                    
+                    <a href="index.html" class="theme-button py-1 px-3 rounded-md text-xs font-semibold">
+                        Back
+                    </a>
+                </div>
+                
+                <!-- NEW: Theme Selector -->
+                <select id="theme-select" class="select-field theme-button py-1 px-3 rounded-md text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-white" title="Change Theme">
+                    <option value="default">Default Theme</option>
+                    <option value="darker">Darker Mode</option>
+                    <option value="light">Light Mode</option>
+                    <option value="discord">Discord Light</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="forest">Forest</option>
+                    <option value="sunset">Sunset</option> <!-- NEW -->
+                    <option value="terminal">Terminal</option> <!-- NEW -->
+                    <option value="tuff">Tuff (2008)</option>
+                    <!-- REMOVED Unthemed -->
+                </select>
+                <!-- END: Theme Selector -->
+            </div>
+        </header>
+
+        <!-- Main Content Area (Contacts + Chat) -->
+        <div class="flex flex-1 overflow-hidden">
+            
+            <!-- Sidebar: Contact List -->
+            <aside class="w-1/3 md:w-1/4 h-full border-r overflow-y-auto flex-shrink-0 flex flex-col">
+                
+                <!-- REMOVED: Pending Requests Section -->
+
+                <!-- MODIFIED: Friends List Section -> Private Messages -->
+                <div class="flex-1 pt-2">
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase text-center py-2">Private Messages</h3>
+                    <div id="contact-list" class="flex-1">
+                        <!-- "Public" chat is added by default -->
+                        <div class="contact-item active p-4 cursor-pointer" id="contact-public" data-chat-id="public">
+                            <h3 class="font-semibold"># public</h3>
+                            <p class="text-xs text-gray-400 truncate">Everyone can see this chat</p>
+                        </div>
+                        <!-- Other contacts will be added here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- MODIFIED: Add Friend Button -> New Chat -->
+                <button id="add-friend-btn" class="theme-button p-3 m-2 font-semibold text-sm">
+                    New Chat (+)
+                </button>
+                <!-- NEW: Active Users Button -->
+                <button id="active-users-btn" class="theme-button p-3 m-2 font-semibold text-sm">
+                    Active Users
+                </button>
+                <!-- NEW: Reload Chat Button -->
+                <button id="reload-messages-btn" class="theme-button p-3 m-2 font-semibold text-sm">
+                    Reload Chat
+                </button>
+            </aside>
+
+            <!-- Main: Chat Window -->
+            <main class="flex-1 flex flex-col bg-black/20">
+                
+                <!-- Chat Messages Area -->
+                <div id="chat-messages" class="flex-1 p-4 md:p-6 space-y-4 overflow-y-auto">
+                    <!-- Messages will be loaded here by JavaScript -->
+                    <div class="text-center text-xs text-gray-500 uppercase my-2">Welcome to ig0) live chat!</div>
+                </div>
+
+                <!-- Message Input Area -->
+                <form id="message-form" class="flex-shrink-0 p-4 md:p-6 border-t border-[var(--primary-color)]">
+                    
+                    <!-- NEW: Text Controls Bar -->
+                    <div id="text-controls-bar">
+                        <select id="font-select" class="select-field font-control-btn flex-1 text-xs py-1 px-2">
+                            <option value="'Roboto Mono', monospace">Default</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                            <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                            <option value="'Comfortaa', cursive">Comforta</option>
+                        </select>
+                        <button type="button" id="font-bold-btn" class="font-control-btn font-bold">B</button>
+                        <button type="button" id="font-italic-btn" class="font-control-btn italic">I</button>
+                    </div>
+
+                    <!-- NEW: Emoji Panel (hidden by default) -->
+                    <!-- MODIFIED: Added inline style="display: none;" for a stronger default -->
+                    <div id="emoji-panel" class="hidden" style="display: none;">
+                        <!-- Emojis will be added by JS -->
+                    </div>
+
+                    <!-- Reply Preview Bar -->
+                    <div id="reply-preview-bar" class="hidden items-center justify-between p-2 mb-2 rounded-md bg-[var(--light-input-bg)] border-l-4 border-[var(--accent-color)]">
+                        <div class="flex-1 overflow-hidden">
+                            <p id="reply-preview-sender" class="text-xs font-semibold text-[var(--accent-color)]">Replying to...</p>
+                            <p id="reply-preview-text" class="text-sm text-gray-300 truncate">...</p>
+                        </div>
+                        <button type="button" id="reply-preview-cancel" class="p-1 text-gray-400 hover:text-white">
+                            <!-- Close (X) Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Original Input -->
+                    <div class="flex space-x-3">
+                        <!-- NEW: Emoji Button -->
+                        <button type="button" id="emoji-toggle-btn" class="theme-button py-3 px-4 rounded-md font-semibold flex items-center justify-center" title="Toggle Emojis">
+                            <!-- MODIFIED: Replaced :) with ☺ -->
+                            <span class="text-lg font-bold" style="font-family: 'Roboto Mono', monospace; line-height: 1;">☺</span>
+                        </button>
+                        
+                        <input type="text" id="message-input" placeholder="Connecting..."
+                               class="input-field w-full px-4 py-3 rounded-md focus:ring-1 focus:ring-white focus:outline-none" disabled>
+                        <button type="submit" id="send-button" class="theme-button py-3 px-5 rounded-md font-semibold" disabled>
+                            <!-- Send Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
+                    <p id="char-counter" class="text-xs text-gray-400 text-right mt-1 pr-20">0 / 200</p>
+                </form>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- --- ALL MODALS (FIXED: Moved inside BODY tag) --- -->
+
+    <!-- NEW: Generic Message Modal (for errors, info) -->
+    <div id="messageModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm">
+            <h3 id="message-modal-title" class="text-lg font-bold text-center mb-4 text-[var(--accent-color)]">Notice</h3>
+            <p id="message-modal-text" class="text-sm text-center text-gray-300 mb-6">This is a message.</p>
+            <button id="message-modal-close-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- NEW: Change Username Modal -->
+    <div id="changeUsernameModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm">
+            <h3 class="text-lg font-bold text-center mb-4">Change Username</h3>
+            <p class="text-xs text-center text-gray-400 mb-4">Min 3, Max 30 chars. Cannot be your ID.</p>
+            <input type="text" id="change-username-input" class="input-field w-full px-4 py-3 rounded-md focus:ring-1 focus:ring-white focus:outline-none mb-4" placeholder="Enter new username...">
+            <div class="flex space-x-2">
+                <button id="change-username-cancel-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm">
+                    Cancel
+                </button>
+                <button id="change-username-confirm-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm" style="background-color: var(--accent-color); color: var(--text-color-dark);">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Add Friend Modal (New Chat) -->
+    <div id="addFriendModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm">
+            <h3 class="text-lg font-bold text-center mb-4">Start New Chat</h3>
+            <p class="text-xs text-center text-gray-400 mb-4">Enter a user's 10-character ID to start a chat.</p>
+            <input type="text" id="add-friend-input" class="input-field w-full px-4 py-3 rounded-md focus:ring-1 focus:ring-white focus:outline-none mb-2" placeholder="Enter User ID...">
+            <input type="text" id="add-friend-nickname" class="input-field w-full px-4 py-3 rounded-md focus:ring-1 focus:ring-white focus:outline-none mb-4" placeholder="Set local nickname (optional)...">
+            <div class="flex space-x-2">
+                <button id="add-friend-cancel-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm">
+                    Cancel
+                </button>
+                <button id="add-friend-confirm-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm" style="background-color: var(--success-color); color: var(--text-color-dark);">
+                    Start Chat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Active Users Modal -->
+    <div id="activeUsersModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm">
+            <h3 class="text-lg font-bold text-center mb-4">Active Users</h3>
+            <p class="text-xs text-center text-gray-400 mb-4">Users seen in the last 5 minutes.</p>
+            <ul id="active-users-list" class="text-sm text-gray-300 mb-6">
+                <!-- Active users will be loaded here -->
+                <li>Loading...</li>
+            </ul>
+            <button id="active-users-close-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- NEW: Chat Disclaimer Modal -->
+    <div id="disclaimerModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-lg">
+            <h3 class="text-lg font-bold text-center mb-4 text-yellow-400">Chat Rules & Disclaimer</h3>
+            <p class="text-sm text-left text-gray-300 mb-6 whitespace-pre-line">
+I HAVE NO CONTROL OVER WHAT PEOPLE TYPE.
+
+ALL I ASK IS TO BE RESPECTFUL AND NOT SAY TERRIBLE THINGS.
+
+YOU CAN BE IMMATURE, JUST NOT AT A HIGH LEVEL. THIS INCLUDES RACISM, SEXISM, AND SWEARING.
+            </p>
+            <button id="disclaimer-close-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                I Understand
+            </button>
+        </div>
+    </div>
+    <!-- --- END: Disclaimer Modal --- -->
+
+
+    <!-- NEW: User Info Modal (for history) -->
+    <div id="userInfoModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-md">
+            <h3 id="user-info-modal-title" class="text-lg font-bold text-center mb-4 text-[var(--accent-color)]">User History</h3>
+            <ul id="user-info-modal-list" class="text-sm text-gray-300 mb-6">
+                <!-- History will be loaded here -->
+                <li>Loading...</li>
+            </ul>
+            <button id="user-info-modal-close-btn" class="theme-button w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                Close
+            </button>
+        </div>
+    </div>
+    <!-- --- END: User Info Modal --- -->
+
+
+    <!-- Firebase SDK Imports (FIXED: Moved before </body>) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            onAuthStateChanged,
+            signInWithCustomToken // NEW: Import signInWithCustomToken
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            addDoc,
+            onSnapshot,
+            collection,
+            query,
+            Timestamp,
+            where,
+            getDocs,
+            deleteDoc,
+            arrayUnion,
+            orderBy // MODIFIED: Re-added orderBy, but will be removed from query
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- MODAL Elements (Define FIRST for error handling) ---
+        const messageModal = document.getElementById('messageModal');
+        const messageModalTitle = document.getElementById('message-modal-title');
+        const messageModalText = document.getElementById('message-modal-text');
+        const messageModalCloseBtn = document.getElementById('message-modal-close-btn');
+
+        /**
+         * Shows a custom message modal
+         * @param {string} message - The text to display.
+         * @param {string} title - The title for the modal.
+         */
+        function showMessageModal(message, title = "Notice") {
+            // Check if elements exist, in case HTML is broken
+            if (messageModalTitle) messageModalTitle.textContent = title;
+            if (messageModalText) messageModalText.textContent = message;
+            if (messageModal) messageModal.style.display = 'flex';
+        }
+
+        // --- Close Button for error modal (needs to be active immediately) ---
+        if (messageModalCloseBtn) {
+            messageModalCloseBtn.addEventListener('click', () => {
+                if (messageModal) messageModal.style.display = 'none';
+            });
+        }
+        
+        // --- Firebase Config ---
+        /* --- THIS IS THE FIX --- */
+        // Removed the broken URL parameter logic.
+        // This file must be self-contained and use its own config.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        // Restore the hardcoded config.
+        const firebaseConfig = {
+          apiKey: "AIzaSyB60W4_L3rNryzmrbdO1JHPyjl9LvhbVzY",
+          authDomain: "ig0mesg.firebaseapp.com",
+          projectId: "ig0mesg",
+          storageBucket: "ig0mesg.firebasestorage.app",
+          messagingSenderId: "764355298480",
+          appId: "1:764355298480:web:09d2cf0dd96b549b196775",
+          measurementId: "G-0C6VV2ED0Z"
+        };
+        /* --- END FIX --- */
+        
+        let configIsValid = true; 
+        if (!firebaseConfig.projectId) {
+            configIsValid = false;
+            showMessageModal("Firebase config is missing. Please open this app from the main page.", "Config Error");
+        }
+        
+        // --- Initialize Firebase ---
+        let db, auth;
+        let currentUser = null;
+        let currentUsername = null; 
+        let stableDisplayId = null; // This is our "ID"
+        let isAdmin = false; // NEW: Admin flag
+        let currentChatId = 'public'; 
+        let unsubscribeChat = () => {}; 
+        
+        let currentFontStyle = {
+            font: "'Roboto Mono', monospace",
+            bold: false,
+            italic: false
+        };
+
+        // --- Cooldown and Limit Vars ---
+        let messageCount = 0; 
+        let cooldownTime = 0; 
+        const MESSAGE_COOLDOWN = 3000; // 3 seconds
+        const CHARACTER_LIMIT = 200;
+        // NEW: Admin ID List
+        const ADMIN_IDS = ['fPOgCRfWvz', 'TKxnQpAzNM', 'c8KTtyt1Dm'];
+        const SPECIAL_USERNAME = 'LTIVF1hWrH'; // MODIFIED: Swapped user ID
+        // REMOVED: const PENDING_MESSAGE_LIMIT = 2; 
+
+        // --- Reply State ---
+        let currentReply = null; 
+
+        // --- HTML Elements ---
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+        const contactList = document.getElementById('contact-list');
+        const pendingList = document.getElementById('pending-list'); // This is now removed, but we check for it
+        const userIdDisplay = document.getElementById('user-id-display');
+        const friendCodeDisplay = document.getElementById('friend-code-display'); 
+        const nameplate = document.getElementById('nameplate'); 
+        const charCounter = document.getElementById('char-counter'); 
+
+        // --- NEW: Text Control Elements ---
+        const fontSelect = document.getElementById('font-select');
+        const fontBoldBtn = document.getElementById('font-bold-btn');
+        const fontItalicBtn = document.getElementById('font-italic-btn');
+        const themeSelect = document.getElementById('theme-select'); // NEW THEME
+
+        // --- NEW: Emoji Panel Elements ---
+        const emojiPanel = document.getElementById('emoji-panel');
+        const emojiToggleBtn = document.getElementById('emoji-toggle-btn');
+        // MODIFIED: Expanded emoji list
+        const EMOJI_LIST = [
+            // Faces
+            '😀', '😂', '😍', '😎', '🤔', '😭', '🤯', '🥳', 
+            '😡', '😱', '😴', '🤢', '🥺', '🤩', '🤖', '👻',
+            // Gestures & Symbols
+            '👍', '❤️', '🔥', '✨', '🎉', '👋', '💀', '💯',
+            '🙏', '👀', '🚀', '🧠', '👑', '💪', '💰', '📈', 
+            '📉', '⚠️', '✅', '❌', '👇', '👉', '💡', '💔',
+            // Emoticons
+            ':)', ':(', 'XD', ':P', ':O', ';)', '^_^', 'O_O',
+            'T_T', '(<_>)', '(>_>)', '(-_-)', '¯\\\\_(ツ)_/¯'
+        ];
+
+
+        // --- Reply Preview Elements ---
+        const replyPreviewBar = document.getElementById('reply-preview-bar');
+        const replyPreviewSender = document.getElementById('reply-preview-sender');
+        const replyPreviewText = document.getElementById('reply-preview-text');
+        const replyPreviewCancel = document.getElementById('reply-preview-cancel');
+
+        // --- MODIFIED: Username Elements ---
+        const changeUsernameBtn = document.getElementById('change-username-btn');
+        const changeUsernameModal = document.getElementById('changeUsernameModal');
+        const changeUsernameInput = document.getElementById('change-username-input');
+        const changeUsernameConfirmBtn = document.getElementById('change-username-confirm-btn');
+        const changeUsernameCancelBtn = document.getElementById('change-username-cancel-btn');
+
+        // --- Friend Modal Elements ---
+        const addFriendBtn = document.getElementById('add-friend-btn');
+        const addFriendModal = document.getElementById('addFriendModal');
+        const addFriendInput = document.getElementById('add-friend-input');
+        const addFriendNicknameInput = document.getElementById('add-friend-nickname');
+        const addFriendConfirmBtn = document.getElementById('add-friend-confirm-btn');
+        const addFriendCancelBtn = document.getElementById('add-friend-cancel-btn');
+
+        // --- NEW: User Info Modal Elements (FIX) ---
+        const userInfoModal = document.getElementById('userInfoModal');
+        const userInfoModalTitle = document.getElementById('user-info-modal-title');
+        const userInfoModalList = document.getElementById('user-info-modal-list');
+        const userInfoModalCloseBtn = document.getElementById('user-info-modal-close-btn');
+
+        // --- NEW: Disclaimer Modal Elements ---
+        const disclaimerModal = document.getElementById('disclaimerModal');
+        const disclaimerCloseBtn = document.getElementById('disclaimer-close-btn');
+
+        // --- NEW: Active Users Modal Elements (FIX) ---
+        const activeUsersBtn = document.getElementById('active-users-btn');
+        const activeUsersModal = document.getElementById('activeUsersModal');
+        const activeUsersList = document.getElementById('active-users-list');
+        const activeUsersCloseBtn = document.getElementById('active-users-close-btn');
+
+        // --- NEW: Reload Button ---
+        const reloadMessagesBtn = document.getElementById('reload-messages-btn');
+
+        // --- NEW: Firestore Path Constants ---
+        // This path is for public messages
+        const PUBLIC_MESSAGES_PATH = `artifacts/${appId}/public/data/messages`;
+        // This path is for ALL private messages
+        const PRIVATE_MESSAGES_PATH = `artifacts/${appId}/public/data/private_messages`;
+        // This path is for user data
+        const USER_DIRECTORY_PATH = `artifacts/${appId}/public/data/user_directory`;
+        // This path is for relationships
+        const FRIENDSHIPS_PATH = `artifacts/${appId}/public/data/friendships`;
+        // This path is for suspended users
+        const SUSPENDED_PATH = `artifacts/${appId}/public/data/suspended_users`;
+
+
+        // --- NEW: Resize Elements ---
+        const mainContainer = document.getElementById('main-container');
+        const mainHeader = document.getElementById('main-header'); // For dragging
+        const resizeUpBtn = document.getElementById('resize-up-btn');
+        const resizeDownBtn = document.getElementById('resize-down-btn');
+        const resizeShrinkBtn = document.getElementById('resize-shrink-btn'); 
+        const resizeGrowBtn = document.getElementById('resize-grow-btn'); 
+        const fullscreenBtn = document.getElementById('fullscreen-btn'); // Fullscreen
+        
+        let currentHeightVh = 70; // Default height
+        const MIN_HEIGHT = 50;
+        const MAX_HEIGHT = 90;
+        const STEP_HEIGHT = 10;
+
+        let currentWidthRem = 56; // Default width (4xl = 56rem)
+        const MIN_WIDTH_REM = 40; // lg
+        const MAX_WIDTH_REM = 160; // Default: 80, INCREASED TO 160
+        const STEP_WIDTH_REM = 8;
+        
+        // --- NEW: Dragging State ---
+        let isDragging = false;
+        let offsetX, offsetY;
+        let isCentered = true; // Track if window is centered
+
+
+        // --- NEW: Super-safe function to get a sortable timestamp ---
+        /**
+         * Safely converts any timestamp format (Firestore, Date, number) into a sortable number.
+         * @param {*} timestamp - The timestamp data from Firestore.
+         * @returns {number} A millisecond timestamp.
+         */
+        function getSafeTimestamp(timestamp) {
+            if (!timestamp) return 0; // Handle null or undefined
+            
+            // Case 1: It's a Firestore Timestamp object (has .toMillis)
+            if (typeof timestamp.toMillis === 'function') {
+                return timestamp.toMillis();
+            }
+            // Case 2: It's a standard JavaScript Date object (has .getTime)
+            if (typeof timestamp.getTime === 'function') {
+                return timestamp.getTime();
+            }
+            // Case 3: It's a number (like from Date.now())
+            if (typeof timestamp === 'number') {
+                return timestamp;
+            }
+            // Case 4: It's a string that can be parsed into a date
+            if (typeof timestamp === 'string') {
+                const date = new Date(timestamp);
+                if (!isNaN(date.getTime())) { // Check if parsing was successful
+                    return date.getTime();
+                }
+            }
+            // Default: Can't parse it, return 0
+            console.warn("Could not parse timestamp:", timestamp);
+            return 0;
+        }
+
+
+        /**
+         * Main function to start the app
+         */
+        async function main() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                /* MODIFIED: Reverted to signInAnonymously */
+                await signInAnonymously(auth);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        const displayId = user.uid.substring(0, 10);
+                        stableDisplayId = displayId; // <-- This is the ID
+                        
+                        // NEW: Check for Admin
+                        if (ADMIN_IDS.includes(stableDisplayId)) {
+                            isAdmin = true;
+                        }
+
+                        // --- Load or Set Username ---
+                        const userDirRef = doc(db, USER_DIRECTORY_PATH, displayId);
+                        const userDoc = await getDoc(userDirRef);
+
+                        if (userDoc.exists() && userDoc.data().username) {
+                            currentUsername = userDoc.data().username;
+                            // REMOVED: usernameInput.placeholder
+                        } else {
+                            currentUsername = displayId;
+                            // NEW: Add empty usernameHistory and admin status on creation
+                            await setDoc(userDirRef, { 
+                                fullUid: user.uid, 
+                                username: displayId, 
+                                id: displayId, // MODIFIED: friendCode -> id
+                                usernameHistory: [], // Initialize history
+                                isAdmin: isAdmin // NEW: Set admin status
+                            }, { merge: true });
+                        }
+                        
+                        // --- UPDATED: Nameplate UI ---
+                        userIdDisplay.textContent = currentUsername; 
+                        friendCodeDisplay.textContent = `ID: ${displayId}`; // MODIFIED: "Friend Code" -> "ID"
+                        nameplate.title = `Your ID is ${displayId}. Click to copy.`; // MODIFIED
+                        nameplate.onclick = () => copyToClipboard(displayId, 'Your ID'); // MODIFIED
+                        
+                        // Apply default theme
+                        document.body.classList.forEach(c => {
+                            if (c.startsWith('theme-')) document.body.classList.remove(c);
+                        });
+                        document.body.classList.add(`theme-default`);
+                        if(themeSelect) themeSelect.value = 'default';
+
+                        messageInput.disabled = false;
+                        sendButton.disabled = false;
+                        messageInput.placeholder = "Type in #public...";
+
+                        // NEW: Initialize Emoji Panel
+                        initEmojiPanel();
+
+                        // NEW: Show disclaimer
+                        if (disclaimerModal) {
+                            disclaimerModal.style.display = 'flex';
+                        }
+
+                        listenToChat('public');
+                        listenForFriendships();
+
+                        // NEW: Start presence updates
+                        updatePresence(); // Call once immediately
+                        setInterval(updatePresence, 60 * 1000); // Then every 60 seconds
+                    } else {
+                        // ... (error handling) ...
+                    }
+                });
+
+            } catch (error) { // MODIFIED: Fixed the broken catch block
+                console.error("Firebase Init Error:", error);
+                showMessageModal(`Firebase Init Error: ${error.message}. Check your config keys.`, "Error");
+            }
+        }
+        // --- END FIX ---
+
+        /**
+         * Sets or updates the user's display name
+         */
+        async function setUsername() {
+            if (!currentUser) return;
+
+            // MODIFIED: Read from the modal input
+            const newName = changeUsernameInput.value.trim();
+            const displayId = stableDisplayId; 
+            const oldName = currentUsername; // Get the name *before* validation
+
+            // Validation
+            if (newName === oldName) {
+                changeUsernameModal.style.display = 'none'; // Just close if no change
+                return;
+            }
+            if (newName.length < 3 || newName.length > 30) { 
+                showMessageModal("Username must be between 3 and 30 characters.", "Error"); 
+                return;
+            }
+            if (filterMessage(newName) !== newName) {
+                showMessageModal("Username contains inappropriate words.", "Error");
+                return;
+            }
+            if (newName === displayId) {
+                showMessageModal("Username can't be your default ID.", "Error"); // MODIFIED
+                return;
+            }
+
+            try {
+                // Check if username is already taken
+                const userDirRef = collection(db, `artifacts/${appId}/public/data/user_directory`);
+                const q = query(userDirRef, where("username", "==", newName));
+                const querySnapshot = await getDocs(q);
+
+                let isTaken = false;
+                querySnapshot.forEach(doc => {
+                    if (doc.id !== displayId) { isTaken = true; }
+                });
+                if (isTaken) {
+                    showMessageModal("Username is already taken.", "Error");
+                    return;
+                }
+                
+                // NEW: Create history entry
+                const historyEntry = {
+                    name: oldName,
+                    changedAt: Timestamp.now()
+                };
+
+                // Update the doc with the new username
+                const userDocRef = doc(db, USER_DIRECTORY_PATH, displayId);
+                // Use arrayUnion to add the old name to the history
+                await setDoc(userDocRef, { 
+                    username: newName,
+                    usernameHistory: arrayUnion(historyEntry),
+                    isAdmin: isAdmin // NEW: Persist admin status
+                }, { merge: true });
+
+                currentUsername = newName; 
+                userIdDisplay.textContent = newName; 
+                
+                // MODIFIED: Clear modal input and hide modal
+                changeUsernameInput.value = '';
+                changeUsernameModal.style.display = 'none';
+                
+                showMessageModal(`Username set to ${newName}!`, "Success");
+                
+            } catch (err) {
+                console.error("Error setting username: ", err);
+                showMessageModal("Failed to set username.", "Error");
+            }
+        }
+
+
+        /**
+         * Sends a message to the currently active chat
+         */
+        async function sendMessage(text, replyTo = null) {
+            if (!text || !currentUser) return;
+            
+            // --- NEW: Admin Command Check ---
+            if (isAdmin && text.startsWith('/suspend ')) {
+                const parts = text.split(' ');
+                if (parts.length === 3) {
+                    const userIdToSuspend = parts[1];
+                    const durationMinutes = parseInt(parts[2], 10);
+                    
+                    if (userIdToSuspend && userIdToSuspend.length === 10 && !isNaN(durationMinutes) && durationMinutes > 0) {
+                        const expirationTime = Timestamp.now().seconds + (durationMinutes * 60);
+                        const suspendRef = doc(db, SUSPENDED_PATH, userIdToSuspend);
+                        try {
+                            await setDoc(suspendRef, {
+                                suspendedBy: stableDisplayId,
+                                expiresAt: expirationTime
+                            });
+                            showMessageModal(`User ${userIdToSuspend} has been suspended for ${durationMinutes} minutes.`, "Suspend Command");
+                        } catch (err) {
+                            showMessageModal(`Failed to suspend user: ${err.message}`, "Error");
+                        }
+                    } else {
+                        showMessageModal("Invalid command. Use: /suspend [UserID] [Minutes]", "Error");
+                    }
+                } else {
+                    showMessageModal("Invalid command. Use: /suspend [UserID] [Minutes]", "Error");
+                }
+                return; // Stop the command from being sent as a message
+            }
+            // --- END: Admin Command Check ---
+
+            const filteredText = filterMessage(text);
+            let collectionPath;
+            let messageData = {
+                displayId: currentUsername,
+                friendCode: stableDisplayId, // The 10-char ID
+                userId: currentUser.uid,
+                text: filteredText,
+                timestamp: Timestamp.now(),
+                replyTo: replyTo, // Add the reply object
+                style: currentFontStyle, // Add style object
+                isAdmin: isAdmin // Add admin status
+            };
+
+            try {
+                if (currentChatId === 'public') {
+                    // --- MODIFIED: Use the correct public path ---
+                    collectionPath = PUBLIC_MESSAGES_PATH;
+                    await addDoc(collection(db, collectionPath), messageData);
+                } else {
+                    // --- MODIFIED: Use the correct private path and add conversationId ---
+                    collectionPath = PRIVATE_MESSAGES_PATH;
+                    messageData.conversationId = currentChatId; // Add the conversationId
+                    await addDoc(collection(db, collectionPath), messageData);
+                    
+                    // Update the last message for private chats
+                    const chatDocRef = doc(db, FRIENDSHIPS_PATH, currentChatId);
+                    await setDoc(chatDocRef, {
+                        lastMessage: {
+                            text: filteredText,
+                            timestamp: messageData.timestamp
+                        }
+                    }, { merge: true });
+                }
+                // --- END FIX ---
+
+            } catch (err) {
+                console.error("Error sending message: ", err);
+                showMessageModal("Failed to send message.", "Error");
+            }
+        }
+
+        /**
+         * NEW/RESTORED: Listens to a specific chat for messages
+         */
+        function listenToChat(chatId) {
+            // Unsubscribe from the old chat listener
+            unsubscribeChat();
+            currentChatId = chatId;
+            let messagesCollectionRef;
+            let q;
+
+            // --- MODIFIED: This is the Private Message FIX ---
+            if (currentChatId === 'public') {
+                // 1. Public chat path
+                messagesCollectionRef = collection(db, PUBLIC_MESSAGES_PATH);
+                // Public chat query (get all)
+                q = query(messagesCollectionRef); 
+            } else {
+                // 2. Private chat path (one big collection)
+                messagesCollectionRef = collection(db, PRIVATE_MESSAGES_PATH);
+                // Private chat query (only get messages for this conversation)
+                q = query(messagesCollectionRef, where("conversationId", "==", currentChatId));
+            }
+            // --- END FIX ---
+
+            unsubscribeChat = onSnapshot(q, (snapshot) => {
+                
+                // 1. Get all messages into an array
+                const messages = [];
+                snapshot.forEach(doc => {
+                    messages.push({ id: doc.id, ...doc.data() });
+                });
+
+                // 2. Sort the array by timestamp
+                // Handle missing timestamps to prevent crashes
+                // --- MODIFIED: Use the new 'getSafeTimestamp' function ---
+                messages.sort((a, b) => {
+                    const timeA = getSafeTimestamp(a.timestamp);
+                    const timeB = getSafeTimestamp(b.timestamp);
+                    return timeA - timeB;
+                });
+
+                chatMessages.innerHTML = ''; // Clear chat
+                
+                // 3. Loop through the *sorted* array and display
+                messages.forEach(msg => {
+                    // --- THIS IS THE FIX ---
+                    // Safely check if the message is from the current user
+                    // This handles old messages that might be missing one of the IDs
+                    const isMyMessage = (msg.userId && msg.userId === currentUser.uid) || 
+                                      (msg.friendCode && msg.friendCode === stableDisplayId);
+                    const type = isMyMessage ? 'outgoing' : 'incoming';
+                    // --- END FIX ---
+                    
+                    const elem = createMessageElement(msg, type);
+                    chatMessages.appendChild(elem);
+                });
+                // --- END FIX ---
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, (error) => {
+                console.error("Error listening to chat: ", error);
+                // The "failed-precondition" error won't happen anymore,
+                // but we'll leave the generic error.
+                showMessageModal("Error connecting to chat. Check console.", "Error");
+            });
+        }
+
+        /**
+         * Creates the HTML element for a single message bubble
+         * MODIFIED: Now accepts isAdmin and style
+         */
+        function createMessageElement(msg, type) { 
+            // NEW: Destructure the full message object
+            // MODIFIED: Renamed 'isAdmin' to 'messageIsAdmin' to avoid conflict with global 'isAdmin'
+            const { text, displayId, timestamp, replyTo, id, style = {}, friendCode, isAdmin: messageIsAdmin } = msg;
+
+            const wrapper = document.createElement('div');
+            const bubble = document.createElement('div');
+            
+            // --- Add Reply Snippet ---
+            if (replyTo) {
+                const replySnippet = document.createElement('div');
+                replySnippet.className = 'reply-snippet';
+                
+                const replySender = document.createElement('p');
+                replySender.className = 'text-xs font-semibold';
+                replySender.textContent = replyTo.sender;
+                
+                const replyText = document.createElement('p');
+                replyText.className = 'text-sm truncate';
+                replyText.textContent = replyTo.text;
+
+                replySnippet.appendChild(replySender);
+                replySnippet.appendChild(replyText);
+                bubble.appendChild(replySnippet);
+            }
+
+            // Add Sender Name
+            const senderP = document.createElement('p');
+            if (type === 'outgoing') {
+                senderP.className = `text-xs font-semibold mb-1 text-black/60`; 
+                senderP.textContent = displayId || 'You'; 
+            } else {
+                senderP.className = `text-xs font-semibold mb-1 text-gray-400`; 
+                senderP.textContent = displayId || 'User'; 
+            }
+            
+            // NEW: Make sender name clickable for user info
+            if (friendCode) {
+                senderP.classList.add('cursor-pointer', 'hover:underline');
+                senderP.addEventListener('click', () => {
+                    showUserInfo(friendCode, displayId);
+                });
+            }
+            bubble.appendChild(senderP);
+
+            // NEW: Add Admin Badge
+            if (messageIsAdmin) { // MODIFIED: Use 'messageIsAdmin'
+                const adminBadge = document.createElement('span');
+                adminBadge.textContent = 'Admin';
+                adminBadge.className = 'ml-2 px-1.5 py-0.5 rounded text-xs font-bold bg-[var(--danger-color)] text-black';
+                senderP.appendChild(adminBadge);
+            } 
+            // --- NEW: Add Special User Tag ---
+            else if (displayId === SPECIAL_USERNAME) { // MODIFIED: Check displayId (username)
+                const specialTag = document.createElement('span');
+                specialTag.textContent = '(Tester OG)'; // MODIFIED: Changed text
+                specialTag.className = 'ml-2 px-1.5 py-0.5 rounded text-xs font-bold bg-blue-600 text-gray-300'; // MODIFIED: Blue bg, gray text
+                senderP.appendChild(specialTag);
+            }
+            // --- END NEW ---
+
+            // Add Message Text
+            const messageP = document.createElement('p');
+            messageP.className = 'text-sm';
+            messageP.textContent = text;
+            
+            // --- NEW FIX ---
+            // Add styles to break long words and prevent overflow
+            messageP.style.overflowWrap = 'break-word';
+            messageP.style.wordBreak = 'break-word'; // Fallback
+            // --- END FIX ---
+
+            // --- NEW: Apply Styles ---
+            if (style) {
+                messageP.style.fontFamily = style.font || "'Roboto Mono', monospace";
+                messageP.style.fontWeight = style.bold ? 'bold' : 'normal';
+                messageP.style.fontStyle = style.italic ? 'italic' : 'normal';
+            }
+            // --- END NEW ---
+            bubble.appendChild(messageP);
+            
+            // Add Timestamp
+            const timeSpan = document.createElement('span');
+            timeSpan.className = type === 'outgoing' ? 'text-xs text-gray-700 block text-right mt-1' : 'text-xs text-gray-400 block text-right mt-1';
+            timeSpan.textContent = timestamp ? timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+            bubble.appendChild(timeSpan);
+
+            // --- Add Reply Button ---
+            let iconColorClass = 'reply-btn-incoming'; // default
+            if (type === 'outgoing') iconColorClass = 'reply-btn-outgoing';
+
+            const replyBtn = document.createElement('button');
+            replyBtn.className = `reply-btn ${iconColorClass}`;
+            replyBtn.title = "Reply to this message";
+            replyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>`;
+            
+            replyBtn.addEventListener('click', () => {
+                currentReply = { messageId: id, text: text, sender: displayId };
+                replyPreviewSender.textContent = `Replying to ${displayId}`;
+                replyPreviewText.textContent = text;
+                replyPreviewBar.style.display = 'flex';
+                messageInput.focus();
+            });
+            bubble.appendChild(replyBtn);
+
+            // --- Set up the bubble style (CHECK FOR ADMIN FIRST) ---
+            if (type === 'outgoing') {
+                bubble.className = 'message-outgoing p-3 rounded-lg';
+            } else {
+                // --- MODIFIED: Check for special user ---
+                if (displayId === SPECIAL_USERNAME) { // MODIFIED: Check displayId (username)
+                    bubble.className = 'message-special p-3 rounded-lg'; // Apply new blue style
+                } else {
+                    bubble.className = 'message-incoming p-3 rounded-lg'; // Standard incoming
+                }
+                // --- END MODIFIED ---
+            }
+            
+            // Set up the wrapper to align the bubble
+            wrapper.className = type === 'outgoing' ? 'flex justify-end' : 'flex justify-start';
+            wrapper.appendChild(bubble);
+
+            return wrapper;
+        }
+
+        /**
+         * Simple swear word filter
+         */
+        function filterMessage(text) {
+            let filteredText = text;
+            const badWords = [
+                /\bf[u*]*[c*]*k\b/gi, 
+                /\bs[h*]*i[t*]\b/gi, 
+                /\bb[i*]*[t*]*ch\b/gi, 
+                /\bn[i*]*[g*]*[g*]*[e*]*r\b/gi,
+                /\bAlan\b/gi,    // NEW
+                /\bAllen\b/gi,   // NEW
+                /\bAllan\b/gi,   // NEW
+                /\ballaan\b/gi  // NEW
+            ];
+            
+            badWords.forEach(word => {
+                filteredText = filteredText.replace(word, '****');
+            });
+            return filteredText;
+        }
+
+        /**
+         * Helper function to copy text to clipboard
+         */
+        function copyToClipboard(text, type) {
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy'); 
+                document.body.removeChild(textarea);
+                showMessageModal(`${type} copied to clipboard: ${text}`, "Copied!");
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showMessageModal("Failed to copy to clipboard.", "Error");
+            }
+        }
+
+        /**
+         * Updates the character counter under the message input
+         */
+        function updateCharCounter() {
+            const len = messageInput.value.length;
+            charCounter.textContent = `${len} / ${CHARACTER_LIMIT}`;
+            
+            const now = Date.now();
+            if (len > CHARACTER_LIMIT) {
+                charCounter.classList.add('text-[var(--accent-color)]'); 
+                sendButton.disabled = true; 
+            } else {
+                charCounter.classList.remove('text-[var(--accent-color)]');
+                if (now > cooldownTime) { 
+                    sendButton.disabled = false;
+                }
+            }
+        }
+
+        /**
+         * Listens for all friendships (pending and active)
+         */
+        function listenForFriendships() {
+            if (!stableDisplayId) return; 
+            const friendshipsRef = collection(db, FRIENDSHIPS_PATH);
+            const q = query(friendshipsRef, where('users', 'array-contains', stableDisplayId)); 
+
+            onSnapshot(q, async (snapshot) => {
+                // REMOVED: pendingList.innerHTML = '';
+                const contacts = contactList.querySelectorAll('.contact-item:not(#contact-public)');
+                contacts.forEach(c => c.remove());
+
+                // REMOVED: let pendingCount = 0;
+                for (const doc of snapshot.docs) { 
+                    const chatData = doc.data();
+                    const chatId = doc.id;
+                    const otherUserId = chatData.users.find(id => id !== stableDisplayId);
+                    
+                    if (otherUserId) {
+                        const userDirRef = doc(db, USER_DIRECTORY_PATH, otherUserId);
+                        const userDoc = await getDoc(userDirRef);
+                        const otherUsername = (userDoc.exists() && userDoc.data().username) ? userDoc.data().username : otherUserId; 
+                        
+                        const myNicknameField = (stableDisplayId < otherUserId) ? 'user1_nickname' : 'user2_nickname';
+                        const displayName = chatData[myNicknameField] || otherUsername; 
+
+                        if (chatData.status === 'friends') {
+                            addContactToSidebar(displayName, chatId, chatData.lastMessage ? chatData.lastMessage.text : "Private Chat", otherUserId);
+                        } else if (chatData.status === 'pending' && chatData.initiator !== stableDisplayId) {
+                            // This is a request *for me*. Auto-accept it.
+                            acceptFriendRequest(chatId, true); // Pass true to suppress modal
+                            addContactToSidebar(displayName, chatId, "Accepted request!", otherUserId);
+                        } else if (chatData.status === 'pending' && chatData.initiator === stableDisplayId) {
+                            // This is a request *I sent*. Show it.
+                            addContactToSidebar(displayName, chatId, "Waiting for them...", otherUserId);
+                        }
+                    }
+                }
+                
+                // REMOVED: Pending list placeholder
+
+            }, (error) => {
+                console.error("Error listening for contacts: ", error);
+            });
+        }
+
+        /**
+         * REMOVED: addPendingRequestToSidebar function
+         */
+
+        /**
+         * Adds a new contact (friend) to the sidebar
+         */
+        function addContactToSidebar(username, chatId, lastMessage, otherUserId) { // NEW: Added otherUserId
+            if (document.getElementById(`contact-${chatId}`)) {
+                const contactItem = document.getElementById(`contact-${chatId}`);
+                contactItem.querySelector('h3').textContent = username;
+                contactItem.querySelector('p').textContent = lastMessage;
+                return;
+            }
+
+            const contactItem = document.createElement('div');
+            contactItem.className = 'contact-item p-4 cursor-pointer';
+            contactItem.id = `contact-${chatId}`;
+            contactItem.dataset.chatId = chatId;
+
+            contactItem.innerHTML = `
+                <h3 class="font-semibold">${username}</h3>
+                <p class="text-xs text-gray-400 truncate">${lastMessage || "Private Chat"}</p>
+            `;
+            
+            // NEW: Make username clickable
+            const h3 = contactItem.querySelector('h3');
+            if (h3 && otherUserId) {
+                h3.classList.add('cursor-pointer', 'hover:underline');
+                h3.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Stop it from switching chat
+                    showUserInfo(otherUserId, username);
+                });
+            }
+
+            contactItem.addEventListener('click', () => {
+                document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('active'));
+                contactItem.classList.add('active');
+                listenToChat(chatId);
+                messageInput.placeholder = `Type in @${username}...`;
+            });
+            contactList.appendChild(contactItem);
+        }
+        
+        /**
+         * MODIFIED: Sends a friend request or just creates a friendship
+         */
+        async function sendFriendRequest(otherUserFriendCode, localNickname) {
+            if (!otherUserFriendCode || otherUserFriendCode.length !== 10) {
+                showMessageModal("Invalid ID. Must be 10 characters.", "Error");
+                return;
+            }
+            const myStableId = stableDisplayId; 
+            if (otherUserFriendCode === myStableId) { 
+                showMessageModal("You can't add yourself!", "Notice");
+                return;
+            }
+            try {
+                const userDocRef = doc(db, USER_DIRECTORY_PATH, otherUserFriendCode);
+                const userDoc = await getDoc(userDocRef);
+                if (!userDoc.exists()) {
+                    showMessageModal("User not found. Check the ID.", "Error");
+                    return;
+                }
+                const otherUserStableId = userDoc.id;
+                const chatId = [myStableId, otherUserStableId].sort().join('_');
+                const chatDocRef = doc(db, FRIENDSHIPS_PATH, chatId);
+                const chatDoc = await getDoc(chatDocRef);
+
+                if (chatDoc.exists()) {
+                    // Friendship doc already exists
+                    const data = chatDoc.data();
+                    if (data.status === 'pending' && data.initiator !== myStableId) {
+                        // This is a pending request *for me*. Accept it.
+                        await acceptFriendRequest(chatId);
+                    } else {
+                        // We are already friends or request is already sent.
+                        // We can just use this to update the nickname.
+                        showMessageModal("Chat already exists. Updating nickname...", "Notice");
+                    }
+                } else {
+                    // No doc exists. Create a new one with status 'friends' immediately.
+                    await setDoc(chatDocRef, {
+                        users: [myStableId, otherUserStableId],
+                        createdAt: Timestamp.now(),
+                        status: 'friends', // MODIFIED: 'pending' -> 'friends'
+                        initiator: myStableId
+                    });
+                    showMessageModal("Chat created!", "Success");
+                }
+                
+                // Set/Update the nickname
+                if (localNickname) {
+                    const myNicknameField = (myStableId < otherUserStableId) ? 'user1_nickname' : 'user2_nickname';
+                    await setDoc(chatDocRef, { [myNicknameField]: localNickname }, { merge: true });
+                }
+
+                // --- REMOVED ---
+                // The private chat stub is no longer needed
+                // as we are not using subcollections.
+                /*
+                const privateChatDocRef = doc(db, `artifacts/${appId}/public/data/private_chats`, chatId);
+                await setDoc(privateChatDocRef, { stub: true }, { merge: true });
+                */
+
+            } catch (error) {
+                console.error("Error creating chat: ", error);
+                showMessageModal("Error creating chat.", "Error");
+            }
+        }
+
+        /**
+         * Accepts a friend request
+         */
+        async function acceptFriendRequest(chatId, suppressModal = false) { // ADDED suppressModal
+            try {
+                const chatDocRef = doc(db, FRIENDSHIPS_PATH, chatId);
+                await setDoc(chatDocRef, { status: 'friends' }, { merge: true });
+                if (!suppressModal) {
+                    showMessageModal("Friend request accepted!", "Success");
+                }
+            } catch (err) {
+                console.error("Error accepting request: ", err);
+                if (!suppressModal) {
+                    showMessageModal("Failed to accept request.", "Error");
+                }
+            }
+        }
+        
+        /**
+         * Declines a friend request
+         */
+        async function declineFriendRequest(chatId) {
+            try {
+                const chatDocRef = doc(db, FRIENDSHIPS_PATH, chatId);
+                await deleteDoc(chatDocRef);
+                showMessageModal("Friend request declined.", "Notice");
+            } catch (err) {
+                console.error("Error declining request: ", err);
+                showMessageModal("Failed to decline request.", "Error");
+            }
+        }
+        
+        /**
+         * Checks if user has hit message limit for pending chat
+         */
+        async function checkMessageLimit() {
+            // This entire check is now obsolete since we removed 'pending' status
+            return true;
+        }
+        
+        function clearReply() {
+            currentReply = null;
+            replyPreviewBar.style.display = 'none';
+        }
+
+        // NEW: Function to show user info modal
+        /**
+         * Fetches and displays a user's information and history
+         * @param {string} userId - The 10-char stableDisplayId of the user
+         * @param {string} username - The user's current display name
+         */
+        async function showUserInfo(userId, username) {
+            if (!userId) {
+                showMessageModal("Cannot look up this user (no ID found).", "Error");
+                return;
+            }
+
+            userInfoModalTitle.textContent = `History for ${username}`;
+            userInfoModalList.innerHTML = '<li>Loading...</li>';
+            userInfoModal.style.display = 'flex';
+
+            try {
+                const userDocRef = doc(db, USER_DIRECTORY_PATH, userId);
+                const userDoc = await getDoc(userDocRef);
+
+                if (!userDoc.exists()) {
+                    userInfoModalList.innerHTML = '<li>User data not found.</li>';
+                    return;
+                }
+
+                const data = userDoc.data();
+                const history = data.usernameHistory || [];
+                
+                userInfoModalList.innerHTML = ''; // Clear "Loading..."
+
+                if (history.length === 0) {
+                    userInfoModalList.innerHTML = '<li>No previous usernames found.</li>';
+                    return;
+                }
+
+                // Sort history, newest first
+                history.sort((a, b) => b.changedAt.toMillis() - a.changedAt.toMillis());
+
+                history.forEach(entry => {
+                    const li = document.createElement('li');
+                    const date = entry.changedAt.toDate().toLocaleString();
+                    li.innerHTML = `${entry.name} <span>(until ${date})</span>`;
+                    userInfoModalList.appendChild(li);
+                });
+
+            } catch (err) {
+                console.error("Error fetching user info:", err);
+                userInfoModalList.innerHTML = '<li>Error loading history.</li>';
+            }
+        }
+        
+        // NEW: Center the main container
+        function centerContainer() {
+            mainContainer.style.left = '50%';
+            mainContainer.style.top = '50%';
+            mainContainer.style.transform = 'translate(-50%, -50%)';
+            isCentered = true;
+        }
+
+        // NEW: Initialize Emoji Panel
+        function initEmojiPanel() {
+            if (!emojiPanel) return;
+            
+            EMOJI_LIST.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'emoji-btn';
+                if (emoji.length > 2) { // Text emoticons
+                    btn.classList.add('sm');
+                }
+                btn.textContent = emoji;
+                btn.onclick = () => {
+                    messageInput.value += emoji;
+                    messageInput.focus();
+                    updateCharCounter();
+                };
+                emojiPanel.appendChild(btn);
+            });
+        }
+
+        // NEW: Presence Update Function
+        /**
+         * Updates the user's lastSeen timestamp
+         */
+        async function updatePresence() {
+            if (!stableDisplayId) return;
+            try {
+                const userDocRef = doc(db, USER_DIRECTORY_PATH, stableDisplayId);
+                await setDoc(userDocRef, { lastSeen: Timestamp.now() }, { merge: true });
+            } catch (err) {
+                console.error("Error updating presence:", err);
+            }
+        }
+
+        // NEW: Show Active Users Function
+        /**
+         * Fetches and displays all active users
+         */
+        async function showActiveUsers() {
+            activeUsersList.innerHTML = '<li>Loading...</li>';
+            activeUsersModal.style.display = 'flex';
+
+            try {
+                const usersRef = collection(db, USER_DIRECTORY_PATH);
+                const querySnapshot = await getDocs(usersRef);
+                
+                const users = [];
+                const fiveMinutesAgo = Timestamp.now().seconds - (5 * 60);
+
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const isOnline = (data.lastSeen && data.lastSeen.seconds > fiveMinutesAgo);
+                    users.push({
+                        id: doc.id,
+                        username: data.username,
+                        isOnline: isOnline
+                    });
+                });
+
+                // Sort: Online users first, then alphabetically
+                users.sort((a, b) => {
+                    if (a.isOnline && !b.isOnline) return -1;
+                    if (!a.isOnline && b.isOnline) return 1;
+                    return a.username.localeCompare(b.username);
+                });
+
+                activeUsersList.innerHTML = ''; // Clear "Loading..."
+
+                if (users.length === 0) {
+                    activeUsersList.innerHTML = '<li>No users found.</li>';
+                    return;
+                }
+
+                users.forEach(user => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center p-2 rounded hover:bg-[var(--input-bg)]';
+                    
+                    const statusDot = document.createElement('span');
+                    statusDot.className = `w-3 h-3 rounded-full mr-3 ${user.isOnline ? 'bg-green-500' : 'bg-gray-500'}`;
+                    statusDot.title = user.isOnline ? 'Online' : 'Offline';
+
+                    const usernameSpan = document.createElement('span');
+                    usernameSpan.textContent = user.username;
+                    
+                    /* The user ID span is no longer created */
+                    
+                    li.appendChild(statusDot);
+                    li.appendChild(usernameSpan);
+                    /* The user ID span is no longer added to the list */
+                    activeUsersList.appendChild(li);
+                });
+
+            } catch (err) {
+                console.error("Error fetching active users:", err);
+                activeUsersList.innerHTML = '<li>Error loading users.</li>';
+            }
+        }
+
+
+        // --- Event Listeners ---
+        messageForm.addEventListener('submit', async (e) => { 
+            e.preventDefault();
+
+            // --- NEW: Suspension Check ---
+            if (!isAdmin) { // Admins can't be suspended
+                try {
+                    const suspendRef = doc(db, SUSPENDED_PATH, stableDisplayId);
+                    const suspendDoc = await getDoc(suspendRef);
+                    if (suspendDoc.exists()) {
+                        const data = suspendDoc.data();
+                        const now = Timestamp.now().seconds;
+                        if (data.expiresAt > now) {
+                            const minutesLeft = Math.ceil((data.expiresAt - now) / 60);
+                            showMessageModal(`You are suspended. You cannot send messages for another ${minutesLeft} minutes.`, "Suspended");
+                            return; // Stop them from sending
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error checking suspension:", err);
+                }
+            }
+            // --- END: Suspension Check ---
+
+
+            // --- UPDATED: Cooldown Check (Admin bypass) ---
+            const now = Date.now();
+            if (now < cooldownTime && !isAdmin) { // MODIFIED: Admin bypass
+                const timeLeft = Math.ceil((cooldownTime - now) / 1000);
+                showMessageModal(`Please wait ${timeLeft}s before sending another message.`, "Cooldown");
+                return;
+            }
+
+            const text = messageInput.value.trim();
+            if (!text) return; 
+
+            if (text.length > CHARACTER_LIMIT) {
+                showMessageModal(`Message is too long (max ${CHARACTER_LIMIT} characters).`, "Error");
+                return; 
+            }
+            
+            const canSend = await checkMessageLimit(); // This will just return true now
+            if (!canSend) return; 
+            
+            sendMessage(text, currentReply); 
+            messageInput.value = '';
+            updateCharCounter(); 
+            clearReply();
+            // MODIFIED: Use style.display for a stronger hide
+            emojiPanel.style.display = 'none'; 
+            emojiPanel.classList.add('hidden'); // NEW: Hide emoji panel on send
+            
+            // --- UPDATED: Cooldown Logic (Admin bypass) ---
+            if (!isAdmin) { // MODIFIED: Admin bypass
+                messageCount++;
+                const activeContact = document.querySelector('.contact-item.active h3');
+                const chatName = activeContact ? (activeContact.textContent.startsWith('#') ? activeContact.textContent : '@' + activeContact.textContent) : '#public';
+
+                if (messageCount >= 3) {
+                    messageCount = 0; 
+                    cooldownTime = Date.now() + MESSAGE_COOLDOWN; 
+                    
+                    sendButton.disabled = true;
+                    messageInput.disabled = true;
+                    messageInput.placeholder = "Cooldown...";
+                    
+                    setTimeout(() => {
+                        sendButton.disabled = false;
+                        messageInput.disabled = false;
+                        messageInput.placeholder = `Type in ${chatName}...`;
+                        updateCharCounter(); 
+                    }, MESSAGE_COOLDOWN);
+                }
+            }
+            
+        });
+
+        // --- NEW: Text Control Listeners ---
+        fontSelect.addEventListener('change', (e) => {
+            currentFontStyle.font = e.target.value;
+        });
+        fontBoldBtn.addEventListener('click', () => {
+            currentFontStyle.bold = !currentFontStyle.bold;
+            fontBoldBtn.classList.toggle('toggled', currentFontStyle.bold);
+        });
+        fontItalicBtn.addEventListener('click', () => {
+            currentFontStyle.italic = !currentFontStyle.italic;
+            fontItalicBtn.classList.toggle('toggled', currentFontStyle.italic);
+        });
+
+        // --- NEW: Emoji Toggle Listener ---
+        emojiToggleBtn.addEventListener('click', () => {
+            // MODIFIED: Use style.display to toggle, as it's stronger
+            if (emojiPanel.style.display === 'none' || emojiPanel.classList.contains('hidden')) {
+                emojiPanel.style.display = 'grid'; // 'grid' is what the panel uses
+                emojiPanel.classList.remove('hidden');
+            } else {
+                emojiPanel.style.display = 'none';
+                emojiPanel.classList.add('hidden');
+            }
+        });
+
+        messageInput.addEventListener('input', updateCharCounter);
+        
+        // --- MODIFIED: Username Listeners ---
+        changeUsernameBtn.addEventListener('click', () => {
+            changeUsernameInput.value = currentUsername; // Pre-fill
+            changeUsernameModal.style.display = 'flex';
+            changeUsernameInput.focus();
+        });
+        changeUsernameCancelBtn.addEventListener('click', () => {
+            changeUsernameModal.style.display = 'none';
+        });
+        changeUsernameConfirmBtn.addEventListener('click', setUsername);
+        changeUsernameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                setUsername();
+            }
+        });
+
+
+        // --- Friend Modal Listeners ---
+        addFriendBtn.addEventListener('click', () => {
+            addFriendInput.value = ''; 
+            addFriendNicknameInput.value = '';
+            addFriendModal.style.display = 'flex'; 
+            addFriendInput.focus();
+        });
+        addFriendCancelBtn.addEventListener('click', () => addFriendModal.style.display = 'none');
+        addFriendConfirmBtn.addEventListener('click', () => {
+            const friendCode = addFriendInput.value.trim();
+            const localNickname = addFriendNicknameInput.value.trim();
+            if (friendCode) {
+                sendFriendRequest(friendCode, localNickname); // MODIFIED: This function is now different
+                addFriendModal.style.display = 'none';
+            } else {
+                showMessageModal("ID is required.", "Error");
+            }
+        });
+
+        // --- NEW: Disclaimer Modal Listener ---
+        if (disclaimerCloseBtn) {
+            disclaimerCloseBtn.addEventListener('click', () => {
+                if (disclaimerModal) disclaimerModal.style.display = 'none';
+            });
+        }
+
+        // NEW: User Info Modal Close Button
+        userInfoModalCloseBtn.addEventListener('click', () => {
+            userInfoModal.style.display = 'none';
+        });
+
+        // --- NEW: Active Users Modal Listeners ---
+        activeUsersBtn.addEventListener('click', showActiveUsers);
+        activeUsersCloseBtn.addEventListener('click', () => {
+            activeUsersModal.style.display = 'none';
+        });
+
+        // --- NEW: Reload Chat Listener ---
+        if (reloadMessagesBtn) {
+            reloadMessagesBtn.addEventListener('click', () => {
+                if (currentChatId) {
+                    const activeContact = document.querySelector('.contact-item.active h3');
+                    const chatName = activeContact ? activeContact.textContent : 'current chat';
+                    showMessageModal(`Reloading chat: ${chatName}`, "Reloading");
+                    listenToChat(currentChatId);
+                }
+            });
+        }
+
+        // --- NEW: Resize Button Listeners ---
+        resizeUpBtn.addEventListener('click', () => {
+            currentHeightVh = Math.min(MAX_HEIGHT, currentHeightVh + STEP_HEIGHT);
+            mainContainer.style.height = `${currentHeightVh}vh`;
+            if (isCentered) centerContainer(); // Recenter if it was centered
+        });
+        
+        resizeDownBtn.addEventListener('click', () => {
+            currentHeightVh = Math.max(MIN_HEIGHT, currentHeightVh - STEP_HEIGHT);
+            mainContainer.style.height = `${currentHeightVh}vh`;
+            if (isCentered) centerContainer(); // Recenter if it was centered
+        });
+
+        // NEW: Horizontal Resize Listeners
+        resizeGrowBtn.addEventListener('click', () => {
+            currentWidthRem = Math.min(MAX_WIDTH_REM, currentWidthRem + STEP_WIDTH_REM);
+            mainContainer.style.maxWidth = `${currentWidthRem}rem`;
+            if (isCentered) centerContainer(); // Recenter if it was centered
+        });
+        
+        resizeShrinkBtn.addEventListener('click', () => {
+            currentWidthRem = Math.max(MIN_WIDTH_REM, currentWidthRem - STEP_WIDTH_REM);
+            mainContainer.style.maxWidth = `${currentWidthRem}rem`;
+            if (isCentered) centerContainer(); // Recenter if it was centered
+        });
+        
+        // NEW: Fullscreen Button Listener
+        fullscreenBtn.addEventListener('click', () => {
+            currentHeightVh = MAX_HEIGHT;
+            currentWidthRem = MAX_WIDTH_REM;
+            mainContainer.style.height = `${currentHeightVh}vh`;
+            mainContainer.style.maxWidth = `${currentWidthRem}rem`;
+            centerContainer(); // Center the maximized window
+        });
+        
+        // --- NEW: Theme Select Listener ---
+        if(themeSelect) {
+            themeSelect.addEventListener('change', () => {
+                const newTheme = themeSelect.value;
+                // Get all theme classes and remove them
+                document.body.classList.forEach(c => {
+                    if (c.startsWith('theme-')) document.body.classList.remove(c);
+                });
+                // Add the new one
+                document.body.classList.add(`theme-${newTheme}`);
+                // REMOVED: localStorage.setItem('ig0-chat-theme', newTheme);
+            });
+        }
+        
+        // --- NEW: Dragging Listeners ---
+        mainHeader.addEventListener('mousedown', (e) => {
+            // Only drag if not clicking on an input/button
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.T.tagName === 'A' || e.target.tagName === 'SELECT' || e.target.closest('button') || e.target.closest('a')) {
+                return;
+            }
+            
+            isDragging = true;
+            isCentered = false; // No longer centered
+            mainContainer.style.transform = ''; // Remove transform to use top/left
+            
+            // Calculate offset from top-left corner
+            const rect = mainContainer.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            // Set cursor to grabbing
+            mainHeader.style.cursor = 'grabbing';
+            // Disable text selection while dragging
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            // Restore cursor and text selection
+            mainHeader.style.cursor = 'move';
+            document.body.style.userSelect = '';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            e.preventDefault(); // Prevent text selection
+            
+            let newX = e.clientX - offsetX;
+            let newY = e.clientY - offsetY;
+            
+            // Constrain to viewport
+            const rect = mainContainer.getBoundingClientRect();
+            newX = Math.max(0, Math.min(newX, window.innerWidth - rect.width));
+            newY = Math.max(0, Math.min(newY, window.innerHeight - rect.height));
+
+            mainContainer.style.left = `${newX}px`;
+            mainContainer.style.top = `${newY}px`;
+        });
+        
+        // --- NEW: Window Resize Listener to keep it centered
+        window.addEventListener('resize', () => {
+            if (isCentered) {
+                centerContainer();
+            }
+            // Optional: Constrain dragging position on resize
+            if (!isCentered) {
+                const rect = mainContainer.getBoundingClientRect();
+                let newX = Math.min(rect.left, window.innerWidth - rect.width);
+                let newY = Math.min(rect.top, window.innerHeight - rect.height);
+                newX = Math.max(0, newX);
+                newY = Math.max(0, newY);
+                mainContainer.style.left = `${newX}px`;
+                mainContainer.style.top = `${newY}px`;
+            }
+        });
+
+        replyPreviewCancel.addEventListener('click', clearReply);
+        document.getElementById('contact-public').addEventListener('click', () => {
+            document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('active'));
+            document.getElementById('contact-public').classList.add('active');
+            listenToChat('public');
+            messageInput.placeholder = "Type in #public...";
+        });
+
+        // Start the application
+        if (configIsValid) {
+            main();
+        } else {
+            // ... (error handling) ...
+        }
+
+    </script>
+
+</body>
+</html>

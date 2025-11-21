@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ig0)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom black and white theme */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&display=swap');
+        
+        /* --- NEW CSS VARIABLES FOR THEME --- */
+        :root {
+            --primary-color: #525252; /* Default: Neutral Medium Gray (Used for borders/accents) */
+            --accent-color: #fca5a5;  /* Default: Pink/Red Accent (Used for messages/text) */
+            --dark-card-bg: #262626; 
+            --light-input-bg: #404040;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            color: #FFFFFF; /* White text */
+            background-color: #000000; /* True Black Void */
+            overflow: hidden; /* Hide scrollbar caused by snow animation */
+        }
+
+        /* Scrollbar Styling (Webkit/Blink - Chrome, Edge, Safari) */
+        /* Uses the primary theme color */
+        ::-webkit-scrollbar {
+            width: 10px;
+            background-color: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            border: 2px solid #000000;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #000000;
+        }
+
+        /* --- FALLING SNOW ANIMATION --- */
+        @keyframes falling-snow {
+            0% {
+                /* Start slightly above the top edge */
+                transform: translateY(-100vh);
+            }
+            100% {
+                /* End at the top edge, so the loop is seamless */
+                transform: translateY(0vh);
+            }
+        }
+
+        /* Snow container to hold the layers */
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            z-index: -1;
+        }
+
+        /* Base style for the snow layers (using box-shadow to create many particles) */
+        .snow-layer-particle {
+            content: "";
+            position: absolute;
+            width: 1px; 
+            height: 1px;
+            background: transparent;
+            top: 0;
+            left: 0;
+        }
+
+        /* Layer 1: Dense, fast, small snow (15 seconds cycle) - ~100 particles */
+        .snow-layer-1 {
+            animation: falling-snow 15s linear infinite;
+            /* Particles span 0vh to 200vh for a seamless loop, covering twice the screen height */
+            box-shadow:
+                1vw 10vh #fff, 3vw 120vh #fff, 5vw 30vh #fff, 7vw 140vh #fff, 9vw 50vh #fff, 11vw 160vh #fff, 13vw 70vh #fff, 15vw 180vh #fff, 17vw 90vh #fff, 19vw 200vh #fff,
+                21vw 5vh #fff, 23vw 115vh #fff, 25vw 25vh #fff, 27vw 135vh #fff, 29vw 45vh #fff, 31vw 155vh #fff, 33vw 65vh #fff, 35vw 175vh #fff, 37vw 85vh #fff, 39vw 195vh #fff,
+                41vw 15vh #fff, 43vw 125vh #fff, 45vw 35vh #fff, 47vw 145vh #fff, 49vw 55vh #fff, 51vw 165vh #fff, 53vw 75vh #fff, 55vw 185vh #fff, 57vw 95vh #fff, 59vw 10vh #fff,
+                61vw 110vh #fff, 63vw 20vh #fff, 65vw 130vh #fff, 67vw 40vh #fff, 69vw 150vh #fff, 71vw 60vh #fff, 73vw 170vh #fff, 75vw 80vh #fff, 77vw 190vh #fff, 79vw 100vh #fff,
+                81vw 15vh #fff, 83vw 125vh #fff, 85vw 35vh #fff, 87vw 145vh #fff, 89vw 55vh #fff, 91vw 165vh #fff, 93vw 75vh #fff, 95vw 185vh #fff, 97vw 95vh #fff, 99vw 20vh #fff,
+                2vw 130vh #fff, 4vw 45vh #fff, 6vw 155vh #fff, 8vw 65vh #fff, 10vw 175vh #fff, 12vw 85vh #fff, 14vw 195vh #fff, 16vw 15vh #fff, 18vw 125vh #fff, 20vw 35vh #fff,
+                22vw 145vh #fff, 24vw 55vh #fff, 26vw 165vh #fff, 28vw 75vh #fff, 30vw 185vh #fff, 32vw 95vh #fff, 34vw 10vh #fff, 36vw 110vh #fff, 38vw 20vh #fff, 40vw 130vh #fff,
+                42vw 40vh #fff, 44vw 150vh #fff, 46vw 60vh #fff, 48vw 170vh #fff, 50vw 80vh #fff, 52vw 190vh #fff, 54vw 100vh #fff, 56vw 15vh #fff, 58vw 125vh #fff, 60vw 35vh #fff,
+                62vw 145vh #fff, 64vw 55vh #fff, 66vw 165vh #fff, 68vw 75vh #fff, 70vw 185vh #fff, 72vw 95vh #fff, 74vw 10vh #fff, 76vw 110vh #fff, 78vw 20vh #fff, 80vw 130vh #fff,
+                82vw 40vh #fff, 84vw 150vh #fff, 86vw 60vh #fff, 88vw 170vh #fff, 90vw 80vh #fff, 92vw 190vh #fff, 94vw 100vh #fff, 96vw 15vh #fff, 98vw 125vh #fff, 100vw 35vh #fff; 
+            
+            width: 1px;
+            height: 1px;
+        }
+
+        /* Layer 2: Medium flakes, slightly slower and larger (20 seconds cycle) - ~40 particles */
+        .snow-layer-2 {
+            animation: falling-snow 20s linear infinite;
+            opacity: 0.7;
+            box-shadow:
+                4vw 15vh 0 1px #fff, 8vw 135vh 0 1px #fff, 12vw 45vh 0 1px #fff, 16vw 165vh 0 1px #fff, 20vw 75vh 0 1px #fff, 24vw 185vh 0 1px #fff, 28vw 95vh 0 1px #fff, 32vw 10vh 0 1px #fff,
+                36vw 120vh 0 1px #fff, 40vw 30vh 0 1px #fff, 44vw 140vh 0 1px #fff, 48vw 50vh 0 1px #fff, 52vw 160vh 0 1px #fff, 56vw 70vh 0 1px #fff, 60vw 180vh 0 1px #fff, 64vw 90vh 0 1px #fff,
+                68vw 5vh 0 1px #fff, 72vw 115vh 0 1px #fff, 76vw 25vh 0 1px #fff, 80vw 135vh 0 1px #fff, 84vw 45vh 0 1px #fff, 88vw 155vh 0 1px #fff, 92vw 65vh 0 1px #fff, 96vw 175vh 0 1px #fff, 
+                100vw 85vh 0 1px #fff, 2vw 195vh 0 1px #fff, 10vw 105vh 0 1px #fff, 18vw 15vh 0 1px #fff, 26vw 125vh 0 1px #fff, 34vw 35vh 0 1px #fff, 42vw 145vh 0 1px #fff, 50vw 55vh 0 1px #fff,
+                58vw 165vh 0 1px #fff, 66vw 75vh 0 1px #fff, 74vw 185vh 0 1px #fff, 82vw 95vh 0 1px #fff, 90vw 10vh 0 1px #fff, 98vw 120vh 0 1px #fff, 14vw 100vh 0 1px #fff, 22vw 10vh 0 1px #fff,
+                30vw 120vh 0 1px #fff, 38vw 30vh 0 1px #fff, 46vw 140vh 0 1px #fff; 
+            
+            width: 2px;
+            height: 2px;
+        }
+
+        /* Layer 3: Sparse, largest, slowest snow (30 seconds cycle) - ~25 particles */
+        .snow-layer-3 {
+            animation: falling-snow 30s linear infinite;
+            opacity: 0.5;
+            box-shadow:
+                5vw 20vh 0 2px #fff, 15vw 140vh 0 2px #fff, 25vw 50vh 0 2px #fff, 35vw 170vh 0 2px #fff, 45vw 80vh 0 2px #fff, 55vw 190vh 0 2px #fff,
+                65vw 10vh 0 2px #fff, 75vw 130vh 0 2px #fff, 85vw 40vh 0 2px #fff, 95vw 160vh 0 2px #fff, 10vw 70vh 0 2px #fff, 20vw 180vh 0 2px #fff,
+                30vw 90vh 0 2px #fff, 40vw 5vh 0 2px #fff, 50vw 115vh 0 2px #fff, 60vw 25vh 0 2px #fff, 70vw 145vh 0 2px #fff, 80vw 55vh 0 2px #fff,
+                90vw 175vh 0 2px #fff, 3vw 150vh 0 2px #fff, 23vw 60vh 0 2px #fff, 43vw 180vh 0 2px #fff, 63vw 90vh 0 2px #fff, 83vw 25vh 0 2px #fff,
+                93vw 155vh 0 2px #fff;
+            
+            width: 3px;
+            height: 3px;
+        }
+        /* --- END SNOW ANIMATION --- */
+
+
+        /* --- THEME STYLES (Using CSS Variables) --- */
+        .container-card {
+            background-color: var(--dark-card-bg); /* Neutral Dark Gray (neutral-800) */
+            border: 1px solid var(--primary-color); /* Uses primary color variable */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+        #urlInput, #commandInput { /* Both input fields use this style */
+            background-color: var(--light-input-bg); /* Neutral Lighter Gray (neutral-700) */
+            border: 1px solid var(--primary-color); 
+            color: #FFFFFF;
+        }
+        #messageBox {
+            color: var(--accent-color); 
+            /* Mix accent color with black for the background */
+            background-color: color-mix(in srgb, var(--accent-color) 10%, black); 
+            border: 1px solid var(--primary-color); 
+        }
+        .launch-btn {
+            background-color: var(--light-input-bg); 
+            border: 1px solid var(--primary-color); 
+            color: #FFF;
+            transition: all 0.2s;
+        }
+        .launch-btn:hover {
+            background-color: var(--primary-color); 
+            color: #FFF;
+            border-color: #737373; 
+        }
+
+        /* --- Application Card Styles --- */
+        .app-card {
+            background-color: var(--light-input-bg);
+            border: 1px solid var(--primary-color);
+            cursor: pointer;
+        }
+        .app-card:hover {
+            background-color: var(--primary-color);
+            border-color: #737373;
+        }
+        
+        /* --- Modal Styles (using variables) --- */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 50;
+        }
+        .modal-content {
+            background-color: var(--dark-card-bg); 
+            border: 1px solid var(--primary-color); 
+            z-index: 100;
+        }
+        
+        /* --- Gurt Mode Styles (2008 Nostalgia) --- */
+        .gurt-mode body {
+            background-color: #000080 !important; /* Navy Blue background */
+            font-family: 'Comic Sans MS', cursive, sans-serif !important;
+            color: #FFFFFF !important;
+            overflow: auto !important; /* Allow scrollbars if content is long */
+            /* Tiled background pattern for that Windows 95/XP look */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="2" height="2" fill="%23000080"/><rect x="2" y="2" width="2" height="2" fill="%234169E1"/></svg>') !important; 
+        }
+        .gurt-mode #snow-container {
+            display: none !important; /* Hide snow */
+        }
+        .gurt-mode .container-card {
+            background-color: #C0C0C0 !important; /* Gray Windows 98/XP frame */
+            border: 3px outset #FFFFFF !important;
+            box-shadow: 8px 8px 0px #000000 !important;
+            color: #000000 !important;
+        }
+        /* Buttons and Inputs in Gurt Mode */
+        .gurt-mode #urlInput, .gurt-mode #commandInput, .gurt-mode .launch-btn {
+            background-color: #DDDDDD !important;
+            border: 2px outset #FFFFFF !important;
+            color: #000000 !important;
+            text-shadow: 1px 1px 0px #FFFFFF;
+        }
+        .gurt-mode .launch-btn:hover {
+            background-color: #A0A0A0 !important;
+            border: 2px inset #FFFFFF !important;
+        }
+        /* Make the main title bright red */
+        .gurt-mode .text-pink-400 { 
+            color: #FF0000 !important; 
+            text-shadow: 2px 2px 0px #000000;
+        } 
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- This div IS the falling snow -->
+    <div id="snow-container">
+        <!-- Layer 1: Fast, dense snow -->
+        <div class="snow-layer-particle snow-layer-1"></div>
+        <!-- Layer 2: Medium speed, medium density snow -->
+        <div class="snow-layer-particle snow-layer-2"></div>
+        <!-- Layer 3: Slow, sparse snow -->
+        <div class="snow-layer-particle snow-layer-3"></div>
+    </div>
+
+
+    <div class="container-card p-6 md:p-8 rounded-lg w-full max-w-lg relative">
+        
+        <!-- Info Button (New Feature) -->
+        <button id="infoBtn" class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700/50 transition duration-150">
+            <!-- Icon: Info -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+            </svg>
+        </button>
+
+        <!-- ig0 main text -->
+        <h1 class="text-3xl font-bold text-center mb-8 tracking-widest text-white">ig0 main</h1>
+        
+        <form id="proxyForm">
+            <!-- URL Input Area -->
+            <div class="mb-4">
+                <label for="urlInput" class="block text-sm font-semibold mb-3 text-center">Enter URL and press Enter</label>
+                <input type="text" id="urlInput" placeholder="example.com"
+                       class="w-full px-3 py-3 rounded-md focus:ring-1 focus:ring-white focus:outline-none">
+            </div>
+        </form>
+        
+        <!-- Standard Worker Launch Button -->
+        <button id="workerLaunchBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm">
+            Launch (Worker URL)
+        </button>
+
+        <!-- Stealth Button -->
+        <button id="stealthLaunchBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm mt-4">
+            Launch in about:blank
+        </button>
+        
+        <!-- --- Divider for Command Bar --- -->
+        <div class="mt-6 pt-4 border-t border-gray-600"></div>
+        
+        <!-- Command Bar Input -->
+        <input type="text" id="commandInput" placeholder="Enter command (e.g., 'gurt', 'color:red', 'nosnow')..."
+               class="w-full px-3 py-3 rounded-md focus:ring-1 focus:ring-white focus:outline-none mt-4">
+
+        <!-- Application Board Divider -->
+        <div class="mt-8 pt-6 border-t border-gray-600">
+            <h3 class="text-md font-semibold text-center mb-4 text-gray-300">Application Launch Board</h3>
+            <div id="appBoard" class="grid grid-cols-2 gap-4">
+                
+                <!-- App Card 1: Soundboard (Opens Soundboard.html) -->
+                <button class="app-card launch-btn flex flex-col items-center justify-center p-3 h-24 rounded-lg" data-url="Soundboard (1).html" data-type="direct">
+                    <!-- Icon: Volume2 (Speaker) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-pink-400"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a6.5 6.5 0 0 1 0 7.07"/><path d="M19.07 4.93a12 12 0 0 1 0 14.14"/></svg>
+                    <span class="text-xs mt-1">Soundboard</span>
+                </button>
+
+                <!-- App Card 2: Quick Links (Opens Quick Links Modal) -->
+                <button class="app-card launch-btn flex flex-col items-center justify-center p-3 h-24 rounded-lg" data-url="" data-type="quicklink">
+                    <!-- Icon: Link (Chain) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <span class="text-xs mt-1">Quick Links</span>
+                </button>
+                
+                <!-- NEW: App Card 3: Live Messenger -->
+                <button class="app-card launch-btn flex flex-col items-center justify-center p-3 h-24 rounded-lg" data-url="live_messaging.html" data-type="direct">
+                    <!-- Icon: MessageSquare (Chat bubble) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span class="text-xs mt-1">Live Messenger</span>
+                </button>
+
+            </div>
+        </div>
+        <!-- --- END: Application Board --- -->
+        
+        <div id="messageBox" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+
+    </div>
+
+    <!-- Ig0 Info Modal (NEW) -->
+    <div id="infoModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm">
+            <h3 class="text-lg font-bold text-center mb-4 text-pink-400">Ig0</h3>
+            <p class="text-sm text-center text-gray-300 mb-6">yeah I changed the site added a cool pr0xxy and got rid of games. yeah so just go to a game site to access games thx for using my site :D</p>
+            <button id="infoCloseBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                Close
+            </button>
+        </div>
+    </div>
+    <!-- --- END: Ig0 Info Modal --- -->
+
+
+    <!-- NEW: Disclaimer Modal -->
+    <div id="disclaimerModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-lg"> <!-- Made wider -->
+            <h3 class="text-lg font-bold text-center mb-4 text-yellow-400">Disclaimer</h3>
+            <p class="text-sm text-left text-gray-300 mb-6 whitespace-pre-line"> <!-- Use pre-line to respect line breaks -->
+THIS IS NOT INTENDED TO BYPASS CONTENT FILTERS OR BE A BAD WEBSITE.
+
+IF YOU ARE USING THIS IN SCHOOL I HAVE NO CONTROL WHAT CLASS YOU ARE USING THIS IN.
+
+THIS IS NOT INTENDED FOR SCHOOL USAGE. THIS IS SO KIDS WITHOUT PHONES CAN ACESS INTERNET AND TALK WITH EACHOTHER.
+
+THANK YOU FOR READING THIS.
+            </p>
+            <button id="disclaimerCloseBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                I Understand
+            </button>
+        </div>
+    </div>
+    <!-- --- END: Disclaimer Modal --- -->
+
+
+    <!-- Generic Launch Choice Modal (Used for URL Input and Direct Link App Launch) -->
+    <div id="launchModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm">
+            <h3 class="text-lg font-semibold text-center mb-4">Choose Launch Mode</h3>
+            <p class="text-sm text-center text-gray-300 mb-6" id="modalPrompt">How do you want to open this link?</p>
+            <div class="flex flex-col space-y-3">
+                <button id="modalWorkerBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm">
+                    Worker
+                </button>
+                <button id="modalStealthBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm">
+                    about:blank
+                </button>
+                <button id="modalCancelBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- --- END: Generic Modal --- -->
+    
+    <!-- Quick Links Selection Modal -->
+    <div id="quickLinksModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm">
+            <h3 class="text-lg font-semibold text-center mb-4 text-indigo-400">Select Quick Link</h3>
+            <p class="text-sm text-center text-gray-300 mb-6">Where would you like to go?</p>
+            <div class="flex flex-col space-y-3">
+                <button class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm quick-link-option" data-url="https://now.gg/">
+                    Now.gg
+                </button>
+                <button class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm quick-link-option" data-url="https://google.com/">
+                    Google.com
+                </button>
+                <!-- NEW QUICK LINKS -->
+                <button class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm quick-link-option" data-url="https://www.youtube.com/">
+                    YouTube.com
+                </button>
+                <button class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm quick-link-option" data-url="https://www.reddit.com/">
+                    Reddit.com
+                </button>
+                <button class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm quick-link-option" data-url="https://www.tiktok.com/">
+                    TikTok.com
+                </button>
+                <!-- END NEW QUICK LINKS -->
+
+                <button id="quickLinksCancelBtn" class="launch-btn w-full py-2 px-4 rounded-md font-semibold text-sm mt-2" style="background-color: var(--primary-color);">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- --- END: Quick Links Modal --- -->
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const MESSAGE_BOX = document.getElementById('messageBox');
+            const URL_INPUT = document.getElementById('urlInput');
+            const PROXY_FORM = document.getElementById('proxyForm');
+            const WORKER_BTN = document.getElementById('workerLaunchBtn');
+            const STEALTH_BTN = document.getElementById('stealthLaunchBtn');
+            const APP_BOARD = document.getElementById('appBoard');
+            const COMMAND_INPUT = document.getElementById('commandInput'); 
+            
+            // NEW INFO MODAL ELEMENTS
+            const INFO_BTN = document.getElementById('infoBtn');
+            const INFO_MODAL = document.getElementById('infoModal');
+            const INFO_CLOSE_BTN = document.getElementById('infoCloseBtn');
+
+            // NEW DISCLAIMER MODAL ELEMENTS
+            const DISCLAIMER_MODAL = document.getElementById('disclaimerModal');
+            const DISCLAIMER_CLOSE_BTN = document.getElementById('disclaimerCloseBtn');
+
+            // For Theme and Snow Control
+            const ROOT = document.documentElement;
+            const BODY = document.body;
+            const SNOW_CONTAINER = document.getElementById('snow-container');
+
+            // Generic Modal Elements
+            const LAUNCH_MODAL = document.getElementById('launchModal');
+            const MODAL_WORKER_BTN = document.getElementById('modalWorkerBtn');
+            const MODAL_STEALTH_BTN = document.getElementById('modalStealthBtn');
+            const MODAL_CANCEL_BTN = document.getElementById('modalCancelBtn');
+            const MODAL_PROMPT = document.getElementById('modalPrompt');
+
+            // Quick Links Modal Elements
+            const QUICK_LINKS_MODAL = document.getElementById('quickLinksModal');
+            const QUICK_LINKS_CANCEL_BTN = document.getElementById('quickLinksCancelBtn');
+            const QUICK_LINK_OPTIONS = document.querySelectorAll('.quick-link-option');
+
+            // State variable to hold the URL for modal launch
+            let tempUrlToLaunch = null;
+
+            // --- UPDATED WORKER HOST URL ---
+            const WORKER_HOST = 'https://yo-gurt.uareawesomesauce.workers.dev/';
+            
+            // --- THEME COLOR MAPPING ---
+            const COLOR_MAP = {
+                red: { primary: '#dc2626', accent: '#fca5a5' },
+                blue: { primary: '#2563eb', accent: '#93c5fd' },
+                green: { primary: '#059669', accent: '#a7f3d0' },
+                yellow: { primary: '#d97706', accent: '#fde047' },
+                purple: { primary: '#7c3aed', accent: '#d8b4fe' },
+                dark: { primary: '#525252', accent: '#fca5a5' } // Default
+            };
+
+            /**
+             * Utility function to display non-blocking messages.
+             * @param {string} message 
+             * @param {string} type 
+             */
+            function showMessage(message, type = 'info') {
+                MESSAGE_BOX.textContent = `> ${message}`;
+                MESSAGE_BOX.classList.remove('hidden');
+                
+                // Use CSS variables for consistent theming
+                const accentColor = ROOT.style.getPropertyValue('--accent-color');
+
+                // Basic error/info styling using the current accent color
+                if (type === 'error') {
+                    MESSAGE_BOX.style.color = accentColor;
+                    MESSAGE_BOX.style.borderColor = accentColor;
+                    // Using color-mix for the background color
+                    MESSAGE_BOX.style.backgroundColor = 'color-mix(in srgb, ' + accentColor + ' 10%, black)';
+                } else {
+                    MESSAGE_BOX.style.color = '#FFFFFF';
+                    MESSAGE_BOX.style.borderColor = ROOT.style.getPropertyValue('--primary-color');
+                    MESSAGE_BOX.style.backgroundColor = ROOT.style.getPropertyValue('--dark-card-bg');
+                }
+                
+                setTimeout(() => {
+                    MESSAGE_BOX.classList.add('hidden');
+                }, 6000);
+            }
+
+            function getTargetUrl() {
+                const url = URL_INPUT.value.trim();
+                if (!url) {
+                    showMessage('ERROR: Target URL field is empty. Please enter an address.', 'error');
+                    return null;
+                }
+                if (url.includes(' ')) {
+                    showMessage('ERROR: URL contains spaces. Please fix the address.', 'error');
+                    return null;
+                }
+                // Prepend protocol if missing
+                if (!/^https?:\/\//i.test(url) && !url.includes('.html')) {
+                    return `https://${url}`;
+                }
+                return url;
+            }
+
+            /**
+             * Standard launch: Routes the target URL through the worker in a new tab.
+             * @param {string} targetUrl - The URL to launch.
+             */
+            function launchWorker(targetUrl) {
+                try {
+                    const workerTarget = `${WORKER_HOST}?target=${encodeURIComponent(targetUrl)}`;
+                    const newWindow = window.open(workerTarget, '_blank');
+
+                    if (newWindow) {
+                        const isApp = targetUrl.includes('.html');
+                        const message = isApp ? 'Application launch initiated.' : 'Worker Proxy launch initiated.';
+                        showMessage(`${message} Status: OK`, 'info');
+                        if (!isApp && targetUrl === URL_INPUT.value) URL_INPUT.value = ''; // Clear input only if launched from input
+                    } else {
+                        showMessage('ERROR: Launch blocked. Check if popups are blocked by your browser!', 'error');
+                    }
+                } catch (e) {
+                    showMessage(`Error during worker launch: ${e.message}`, 'error');
+                }
+            }
+            
+            /**
+             * Stealth launch: Opens about:blank and writes the fetched HTML directly into it.
+             * @param {string} targetUrl - The URL to launch.
+             */
+            async function launchStealth(targetUrl) {
+                // If it's a direct HTML file, treat it as a worker launch (cannot stealth a local file)
+                if (targetUrl.includes('.html')) {
+                    launchWorker(targetUrl);
+                    return;
+                }
+
+                try {
+                    const workerTarget = `${WORKER_HOST}?target=${encodeURIComponent(targetUrl)}`;
+                    const newWindow = window.open('about:blank', '_blank');
+
+                    if (newWindow) {
+                        // Show loading message
+                        const doc = newWindow.document;
+                        doc.open();
+                        // --- THIS IS THE FIX ---
+                        // Instead of fetching the text, we write an iframe that
+                        // points directly to the worker. The worker will stream
+                        // the content into this iframe.
+                        doc.write(`
+                            <html>
+                            <head>
+                                <title>ig0)</title>
+                                <style>
+                                    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+                                    iframe { width: 100%; height: 100%; border: none; }
+                                </style>
+                            </head>
+                            <body>
+                                <iframe src="${workerTarget}"></iframe>
+                            </body>
+                            </html>
+                        `);
+                        // --- END OF FIX ---
+                        doc.close();
+                        
+                        const message = targetUrl.includes('.html') ? 'Application stealth launch complete.' : 'Stealth launch complete.';
+                        showMessage(`${message} Status: OK`, 'info');
+                        if (!targetUrl.includes('.html') && targetUrl === URL_INPUT.value) URL_INPUT.value = '';
+                    } else {
+                        showMessage('ERROR: Launch blocked. Check if popups are blocked by your browser!', 'error');
+                    }
+                } catch (e) {
+                    showMessage(`Error during stealth launch: ${e.message}`, 'error');
+                }
+            }
+            
+            // --- NEW COMMAND FUNCTIONS ---
+            
+            /**
+             * Changes the primary and accent colors of the theme.
+             * @param {string} colorName 
+             */
+            function setThemeColor(colorName) {
+                const colors = COLOR_MAP[colorName.toLowerCase()];
+                if (colors) {
+                    ROOT.style.setProperty('--primary-color', colors.primary);
+                    ROOT.style.setProperty('--accent-color', colors.accent);
+                    // Ensure the primary color of the soundboard icon is also updated
+                    document.querySelector('.text-pink-400').style.color = colors.accent; 
+                    showMessage(`Theme set to ${colorName}.`, 'info');
+                } else {
+                    showMessage(`Color ${colorName} not recognized. Choose from: red, blue, green, yellow, purple, dark.`, 'error');
+                }
+            }
+
+            /**
+             * Toggles the snow background effect.
+             * @param {boolean} show - true to show snow, false to hide.
+             */
+            function toggleSnow(show) {
+                if (SNOW_CONTAINER) {
+                    SNOW_CONTAINER.style.display = show ? 'block' : 'none';
+                    showMessage(show ? 'Snow on.' : 'Snow effect hidden.', 'info'); // <-- Changed text here
+                }
+            }
+
+            /**
+             * Toggles the 'crappy 2008 nostalgia' mode.
+             * @param {boolean} enable - true to enable gurt mode.
+             */
+            function toggleGurtMode(enable) {
+                if (enable) {
+                    BODY.classList.add('gurt-mode');
+                    showMessage("yo gurt", 'info');
+                } else {
+                    BODY.classList.remove('gurt-mode');
+                    showMessage("Returning to the modern void.", 'info');
+                }
+            }
+
+            // Set initial theme colors and ensure snow is visible by default
+            setThemeColor('dark');
+            toggleSnow(true);
+
+            // --- Event Listeners ---
+
+            // URL input launch (defaults to worker launch)
+            PROXY_FORM.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const url = getTargetUrl();
+                if (url) {
+                    tempUrlToLaunch = url;
+                    MODAL_PROMPT.textContent = `How do you want to open: ${url}?`;
+                    LAUNCH_MODAL.style.display = 'flex';
+                }
+            });
+            
+            // Standard worker button
+            WORKER_BTN.addEventListener('click', () => {
+                const url = getTargetUrl();
+                if (url) launchWorker(url);
+            });
+
+            // Stealth button
+            STEALTH_BTN.addEventListener('click', () => {
+                const url = getTargetUrl();
+                if (url) launchStealth(url);
+            });
+            
+            // Info Button handlers (NEW)
+            INFO_BTN.addEventListener('click', () => {
+                INFO_MODAL.style.display = 'flex';
+            });
+
+            INFO_CLOSE_BTN.addEventListener('click', () => {
+                INFO_MODAL.style.display = 'none';
+            });
+
+            // Disclaimer Modal handlers (NEW)
+            DISCLAIMER_CLOSE_BTN.addEventListener('click', () => {
+                DISCLAIMER_MODAL.style.display = 'none';
+            });
+
+            // --- Command Bar Handler ---
+            COMMAND_INPUT.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const command = COMMAND_INPUT.value.trim().toLowerCase();
+                    COMMAND_INPUT.value = ''; // Clear input
+
+                    if (command === 'gurt') {
+                        toggleGurtMode(true);
+                    } else if (command === 'nosnow') {
+                        toggleSnow(false);
+                    } else if (command === 'yessnow') {
+                        toggleSnow(true);
+                    } else if (command.startsWith('color:')) {
+                        const color = command.split(':')[1].trim();
+                        toggleGurtMode(false); // Exit Gurt mode if setting color
+                        setThemeColor(color);
+                    } else if (command) {
+                        showMessage(`Command not recognized: ${command}. Try 'gurt', 'nosnow', or 'color:red'.`, 'error');
+                    }
+                }
+            });
+
+            /* --- Application Board Listener --- */
+            APP_BOARD.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.app-card'); 
+                
+                if (target) {
+                    const type = target.dataset.type;
+                    
+                    if (type === 'direct') {
+                        // For local files like Soundboard.html or live_messaging.html
+                        const url = target.dataset.url;
+                        if (url) {
+                            //
+                            // --- THIS IS THE FIX ---
+                            //
+                            // Removed the broken URL parameter logic.
+                            // The destination app (live_messaging) must handle
+                            // its own config and authentication.
+                            //
+                            window.location.href = url; 
+                            showMessage(`Opening application: ${target.querySelector('span:last-child').textContent}`, 'info');
+                        }
+                    } else if (type === 'quicklink') {
+                        // For Quick Links, show the Quick Links modal first
+                        QUICK_LINKS_MODAL.style.display = 'flex';
+                    }
+                }
+            });
+
+            // --- Quick Links Modal Logic ---
+            QUICK_LINKS_CANCEL_BTN.addEventListener('click', () => {
+                QUICK_LINKS_MODAL.style.display = 'none';
+            });
+
+            QUICK_LINK_OPTIONS.forEach(button => {
+                button.addEventListener('click', () => {
+                    const url = button.dataset.url;
+                    if (url) {
+                        tempUrlToLaunch = url; // Set the URL
+                        QUICK_LINKS_MODAL.style.display = 'none'; // Hide this modal
+                        // Show the generic launch modal
+                        MODAL_PROMPT.textContent = `How do you want to open: ${url}?`;
+                        LAUNCH_MODAL.style.display = 'flex';
+                    }
+                });
+            });
+
+            // --- Generic Modal Button Logic ---
+            MODAL_WORKER_BTN.addEventListener('click', () => {
+                if (tempUrlToLaunch) {
+                    launchWorker(tempUrlToLaunch);
+                    tempUrlToLaunch = null;
+                    LAUNCH_MODAL.style.display = 'none';
+                }
+            });
+
+            MODAL_STEALTH_BTN.addEventListener('click', () => {
+                if (tempUrlToLaunch) {
+                    launchStealth(tempUrlToLaunch);
+                    tempUrlToLaunch = null;
+                    LAUNCH_MODAL.style.display = 'none';
+                }
+            });
+
+            MODAL_CANCEL_BTN.addEventListener('click', () => {
+                tempUrlToLaunch = null;
+                LAUNCH_MODAL.style.display = 'none';
+            });
+
+            // --- NEW: Show Disclaimer on Load ---
+            DISCLAIMER_MODAL.style.display = 'flex';
+
+        });
+    </script>
+</body>
+</html>

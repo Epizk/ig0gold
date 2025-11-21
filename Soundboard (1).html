@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soundboard</title>
+
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!--
+        This <base> tag is from your code.
+        It makes all other links (like style.css and sounds.js)
+        load from this website.
+    -->
+    <base href="https://cdn.jsdelivr.net/gh/genizy/soundboard@main/">
+
+    <!-- Styles from your main page for background, theme, and snow -->
+    <style>
+        /* Custom black and white theme */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&display=swap');
+        
+        /* --- CSS VARIABLES FOR THEME --- */
+        :root {
+            --primary-color: #525252; /* Neutral Medium Gray */
+            --accent-color: #fca5a5;  /* Pink/Red Accent */
+            --dark-card-bg: #262626; 
+            --light-input-bg: #404040;
+        }
+
+        body {
+            font-family: 'Roboto+Mono', monospace;
+            color: #FFFFFF; /* White text */
+            background-color: #000000; /* True Black Void */
+            /* Allow scrolling for the soundboard */
+            overflow-y: auto; 
+        }
+
+        /* Scrollbar Styling (Webkit/Blink - Chrome, Edge, Safari) */
+        ::-webkit-scrollbar {
+            width: 10px;
+            background-color: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            border: 2px solid #000000;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #000000;
+        }
+        
+        /* --- FALLING SNOW ANIMATION --- */
+        @keyframes falling-snow {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(0vh); }
+        }
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .snow-layer-particle { content: ""; position: absolute; width: 1px; height: 1px; background: transparent; top: 0; left: 0; }
+        .snow-layer-1 { animation: falling-snow 15s linear infinite; box-shadow: 1vw 10vh #fff, 3vw 120vh #fff, 5vw 30vh #fff, 7vw 140vh #fff, 9vw 50vh #fff, 11vw 160vh #fff, 13vw 70vh #fff, 15vw 180vh #fff, 17vw 90vh #fff, 19vw 200vh #fff, 21vw 5vh #fff, 23vw 115vh #fff, 25vw 25vh #fff, 27vw 135vh #fff, 29vw 45vh #fff, 31vw 155vh #fff, 33vw 65vh #fff, 35vw 175vh #fff, 37vw 85vh #fff, 39vw 195vh #fff, 41vw 15vh #fff, 43vw 125vh #fff, 45vw 35vh #fff, 47vw 145vh #fff, 49vw 55vh #fff, 51vw 165vh #fff, 53vw 75vh #fff, 55vw 185vh #fff, 57vw 95vh #fff, 59vw 10vh #fff, 61vw 110vh #fff, 63vw 20vh #fff, 65vw 130vh #fff, 67vw 40vh #fff, 69vw 150vh #fff, 71vw 60vh #fff, 73vw 170vh #fff, 75vw 80vh #fff, 77vw 190vh #fff, 79vw 100vh #fff, 81vw 15vh #fff, 83vw 125vh #fff, 85vw 35vh #fff, 87vw 145vh #fff, 89vw 55vh #fff, 91vw 165vh #fff, 93vw 75vh #fff, 95vw 185vh #fff, 97vw 95vh #fff, 99vw 20vh #fff, 2vw 130vh #fff, 4vw 45vh #fff, 6vw 155vh #fff, 8vw 65vh #fff, 10vw 175vh #fff, 12vw 85vh #fff, 14vw 195vh #fff, 16vw 15vh #fff, 18vw 125vh #fff, 20vw 35vh #fff, 22vw 145vh #fff, 24vw 55vh #fff, 26vw 165vh #fff, 28vw 75vh #fff, 30vw 185vh #fff, 32vw 95vh #fff, 34vw 10vh #fff, 36vw 110vh #fff, 38vw 20vh #fff, 40vw 130vh #fff, 42vw 40vh #fff, 44vw 150vh #fff, 46vw 60vh #fff, 48vw 170vh #fff, 50vw 80vh #fff, 52vw 190vh #fff, 54vw 100vh #fff, 56vw 15vh #fff, 58vw 125vh #fff, 60vw 35vh #fff, 62vw 145vh #fff, 64vw 55vh #fff, 66vw 165vh #fff, 68vw 75vh #fff, 70vw 185vh #fff, 72vw 95vh #fff, 74vw 10vh #fff, 76vw 110vh #fff, 78vw 20vh #fff, 80vw 130vh #fff, 82vw 40vh #fff, 84vw 150vh #fff, 86vw 60vh #fff, 88vw 170vh #fff, 90vw 80vh #fff, 92vw 190vh #fff, 94vw 100vh #fff, 96vw 15vh #fff, 98vw 125vh #fff, 100vw 35vh #fff; width: 1px; height: 1px; }
+        .snow-layer-2 { animation: falling-snow 20s linear infinite; opacity: 0.7; box-shadow: 4vw 15vh 0 1px #fff, 8vw 135vh 0 1px #fff, 12vw 45vh 0 1px #fff, 16vw 165vh 0 1px #fff, 20vw 75vh 0 1px #fff, 24vw 185vh 0 1px #fff, 28vw 95vh 0 1px #fff, 32vw 10vh 0 1px #fff, 36vw 120vh 0 1px #fff, 40vw 30vh 0 1px #fff, 44vw 140vh 0 1px #fff, 48vw 50vh 0 1px #fff, 52vw 160vh 0 1px #fff, 56vw 70vh 0 1px #fff, 60vw 180vh 0 1px #fff, 64vw 90vh 0 1px #fff, 68vw 5vh 0 1px #fff, 72vw 115vh 0 1px #fff, 76vw 25vh 0 1px #fff, 80vw 135vh 0 1px #fff, 84vw 45vh 0 1px #fff, 88vw 155vh 0 1px #fff, 92vw 65vh 0 1px #fff, 96vw 175vh 0 1px #fff, 100vw 85vh 0 1px #fff, 2vw 195vh 0 1px #fff, 10vw 105vh 0 1px #fff, 18vw 15vh 0 1px #fff, 26vw 125vh 0 1px #fff, 34vw 35vh 0 1px #fff, 42vw 145vh 0 1px #fff, 50vw 55vh 0 1px #fff, 58vw 165vh 0 1px #fff, 66vw 75vh 0 1px #fff, 74vw 185vh 0 1px #fff, 82vw 95vh 0 1px #fff, 90vw 10vh 0 1px #fff, 98vw 120vh 0 1px #fff, 14vw 100vh 0 1px #fff, 22vw 10vh 0 1px #fff, 30vw 120vh 0 1px #fff, 38vw 30vh 0 1px #fff, 46vw 140vh 0 1px #fff; width: 2px; height: 2px; }
+        .snow-layer-3 { animation: falling-snow 30s linear infinite; opacity: 0.5; box-shadow: 5vw 20vh 0 2px #fff, 15vw 140vh 0 2px #fff, 25vw 50vh 0 2px #fff, 35vw 170vh 0 2px #fff, 45vw 80vh 0 2px #fff, 55vw 190vh 0 2px #fff, 65vw 10vh 0 2px #fff, 75vw 130vh 0 2px #fff, 85vw 40vh 0 2px #fff, 95vw 160vh 0 2px #fff, 10vw 70vh 0 2px #fff, 20vw 180vh 0 2px #fff, 30vw 90vh 0 2px #fff, 40vw 5vh 0 2px #fff, 50vw 115vh 0 2px #fff, 60vw 25vh 0 2px #fff, 70vw 145vh 0 2px #fff, 80vw 55vh 0 2px #fff, 90vw 175vh 0 2px #fff, 3vw 150vh 0 2px #fff, 23vw 60vh 0 2px #fff, 43vw 180vh 0 2px #fff, 63vw 90vh 0 2px #fff, 83vw 25vh 0 2px #fff, 93vw 155vh 0 2px #fff; width: 3px; height: 3px; }
+        /* --- END SNOW ANIMATION --- */
+
+        /* --- THEME STYLES (Using CSS Variables) --- */
+        .container-card {
+            background-color: var(--dark-card-bg);
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+        .theme-button {
+            background-color: var(--light-input-bg); 
+            border: 1px solid var(--primary-color); 
+            color: #FFF;
+            transition: all 0.2s;
+            font-family: 'Roboto Mono', monospace;
+        }
+        .theme-button:hover {
+            background-color: var(--primary-color); 
+            color: #FFF;
+            border-color: #737373; 
+        }
+
+        /* The soundboard's own CSS will style the buttons inside.
+          This makes our 'Back' button look right, and lets the
+          soundboard's CSS handle its own buttons.
+        */
+        #controls {
+            padding: 1rem;
+            border-bottom: 1px solid var(--primary-color);
+        }
+        #soundboard {
+            /* Set a height and allow scrolling */
+            height: 60vh;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        /* --- NEW STYLES TO THEME THE SOUNDBOARD --- */
+        
+        /* Override the external style.css for the sound buttons */
+        #soundboard button {
+            /* Apply the ig0 theme to the soundboard buttons */
+            background-color: var(--light-input-bg) !important; 
+            border: 1px solid var(--primary-color) !important;
+            color: #FFFFFF !important; /* White text */
+            font-family: 'Roboto Mono', monospace !important;
+            
+            /* Keep some of the original soundboard's nice stylings */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.1s ease;
+            text-shadow: none !important; /* Remove any text shadow */
+        }
+
+        /* Override the hover/active state */
+        #soundboard button:hover {
+            background-color: var(--primary-color) !important;
+            border-color: #737373 !important;
+            transform: translateY(-2px); /* Keep the little hop */
+        }
+        
+        #soundboard button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style the search bar to match */
+        #searchInput {
+            background-color: var(--light-input-bg) !important;
+            border: 1px solid var(--primary-color) !important;
+            color: #FFFFFF !important;
+            font-family: 'Roboto Mono', monospace !important;
+            padding: 0.5rem 0.75rem !important; /* Add some padding */
+            border-radius: 0.375rem !important; /* 6px rounded corners */
+            margin-left: 10px !important; /* Give it some space */
+        }
+        
+        /* Style the other control buttons to match */
+        .control-button {
+            background-color: var(--light-input-bg) !important; 
+            border: 1px solid var(--primary-color) !important;
+            color: #FFF !important;
+            font-family: 'Roboto Mono', monospace !important;
+            transition: all 0.2s;
+            text-shadow: none !important; /* Remove any text shadow */
+        }
+        .control-button:hover {
+            background-color: var(--primary-color) !important; 
+            border-color: #737373 !important;
+        }
+        /* --- END NEW STYLES --- */
+
+    </style>
+
+    <!-- Scripts and styles from your original file -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5521219086088837" crossorigin="anonymous"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-"></script>
+    <script src="sounds.js" type="module"></script>
+    <script src="main.js" type="module"></script>
+    
+    <!-- This is the soundboard's own CSS file, loaded from the <base> URL -->
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- This div IS the falling snow -->
+    <div id="snow-container">
+        <div class="snow-layer-particle snow-layer-1"></div>
+        <div class="snow-layer-particle snow-layer-2"></div>
+        <div class="snow-layer-particle snow-layer-3"></div>
+    </div>
+
+    <!-- Main App Container -->
+    <!-- FIX: Corrected typo 'classL' to 'class' -->
+    <div class="container-card w-full max-w-4xl rounded-lg flex flex-col overflow-hidden">
+
+        <!-- NEW: Header with Home Button -->
+        <header class="flex items-center justify-center p-4 border-b border-[var(--primary-color)] bg-[var(--dark-card-bg)]"> <!-- MODIFIED: Changed justify-between to justify-center -->
+            <h1 class="text-xl font-bold tracking-widest text-white">Soundboard</h1>
+            <!-- REMOVED: Home button that goes to index.html -->
+        </header>
+
+        <!-- Your original body content, now inside the themed container -->
+        <div id="controls">
+            <!-- FIX: Re-added toggleFavorites button but hidden it. 
+                 The external main.js script is looking for this button,
+                 and this prevents a "Cannot set properties of null" error. -->
+            <button id="toggleFavorites" class="control-button favorites-toggle" style="display: none;">⭐ Favorites: OFF</button>
+            <button id="toggleButton" class="control-button overlap-toggle">🔇 Overlap: OFF</button>
+            <button id="stopButton" class="control-button stop-button">⏹️ Stop All Sounds</button>
+            <input id="searchInput" type="text" placeholder="Search sounds...">
+        </div>
+        
+        <!-- FIX: Re-added the soundboard div that the script targets -->
+        <div id="soundboard"></div>
+
+        <!-- End of your original content -->
+
+    </div>
+
+    <!-- REMOVED SCRIPT: Fix for Back button -->
+</body>
+
+</html>
