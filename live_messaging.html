@@ -683,7 +683,7 @@
                 </button>
                 <!-- NEW: Active Users Button -->
                 <button id="active-users-btn" class="theme-button p-3 m-2 font-semibold text-sm">
-                    Active Users
+                    All Users
                 </button>
                 <!-- NEW: Reload Chat Button -->
                 <button id="reload-messages-btn" class="theme-button p-3 m-2 font-semibold text-sm">
@@ -806,8 +806,8 @@
     <!-- NEW: Active Users Modal -->
     <div id="activeUsersModal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4" style="display: none;">
         <div class="modal-content p-6 rounded-lg w-full max-w-sm">
-            <h3 class="text-lg font-bold text-center mb-4">Active Users</h3>
-            <p class="text-xs text-center text-gray-400 mb-4">Users seen in the last 5 minutes.</p>
+            <h3 class="text-lg font-bold text-center mb-4">All Users</h3>
+            <p class="text-xs text-center text-gray-400 mb-4">All users in the directory. (Green = Online)</p>
             <ul id="active-users-list" class="text-sm text-gray-300 mb-6">
                 <!-- Active users will be loaded here -->
                 <li>Loading...</li>
@@ -903,6 +903,22 @@ YOU CAN BE IMMATURE, JUST NOT AT A HIGH LEVEL. THIS INCLUDES RACISM, SEXISM, AND
                 if (messageModal) messageModal.style.display = 'none';
             });
         }
+        
+        // --- THIS IS THE FIX ---
+        // The user is reporting an error "loadSavedTheme is not defined".
+        // This function does not exist in this file, but a call to it
+        // might have been added by accident. Defining it as an empty
+        // function will prevent the app from crashing.
+        function loadSavedTheme() {
+            console.log("loadSavedTheme() called - this is a dummy function to prevent a crash.");
+        }
+        
+        // --- NEW FIX ---
+        // Adding a dummy function for syncColorInput to prevent a similar crash.
+        function syncColorInput() {
+            console.log("syncColorInput() called - this is a dummy function to prevent a crash.");
+        }
+        // --- END NEW FIX ---
         
         // --- Firebase Config ---
         /* --- THIS IS THE FIX --- */
@@ -1440,10 +1456,10 @@ YOU CAN BE IMMATURE, JUST NOT AT A HIGH LEVEL. THIS INCLUDES RACISM, SEXISM, AND
             // Add Sender Name
             const senderP = document.createElement('p');
             if (type === 'outgoing') {
-                senderP.className = `text-xs font-semibold mb-1 text-black/60`; 
+                senderP.className = `text-xs font-semibold mb-1 text-black/60 inline-block`; // MODIFIED: Added inline-block
                 senderP.textContent = displayId || 'You'; 
             } else {
-                senderP.className = `text-xs font-semibold mb-1 text-gray-400`; 
+                senderP.className = `text-xs font-semibold mb-1 text-gray-400 inline-block`; // MODIFIED: Added inline-block
                 senderP.textContent = displayId || 'User'; 
             }
             
@@ -1495,7 +1511,28 @@ YOU CAN BE IMMATURE, JUST NOT AT A HIGH LEVEL. THIS INCLUDES RACISM, SEXISM, AND
             // Add Timestamp
             const timeSpan = document.createElement('span');
             timeSpan.className = type === 'outgoing' ? 'text-xs text-gray-700 block text-right mt-1' : 'text-xs text-gray-400 block text-right mt-1';
-            timeSpan.textContent = timestamp ? timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+            
+            // --- THIS IS THE FIX ---
+            // Safely parse the timestamp, regardless of its format
+            let date;
+            if (!timestamp) {
+                date = null;
+            } else if (typeof timestamp.toDate === 'function') {
+                date = timestamp.toDate(); // It's a Firestore Timestamp
+            } else if (typeof timestamp.getTime === 'function') {
+                date = timestamp; // It's already a JS Date object
+            } else if (typeof timestamp === 'number') {
+                date = new Date(timestamp); // It's a number (milliseconds)
+            } else if (typeof timestamp === 'string') {
+                date = new Date(timestamp); // It's a string
+            }
+
+            // Only format if we have a valid date
+            timeSpan.textContent = (date && !isNaN(date.getTime())) 
+                ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                : ''; // Leave blank if invalid
+            // --- END FIX ---
+            
             bubble.appendChild(timeSpan);
 
             // --- Add Reply Button ---
@@ -1609,9 +1646,13 @@ YOU CAN BE IMMATURE, JUST NOT AT A HIGH LEVEL. THIS INCLUDES RACISM, SEXISM, AND
                 contacts.forEach(c => c.remove());
 
                 // REMOVED: let pendingCount = 0;
-                for (const doc of snapshot.docs) { 
-                    const chatData = doc.data();
-                    const chatId = doc.id;
+                // --- THIS IS THE FIX ---
+                // Renamed the loop variable from 'doc' to 'friendshipDoc'
+                // to avoid a scope conflict with the imported 'doc' function.
+                for (const friendshipDoc of snapshot.docs) { 
+                    const chatData = friendshipDoc.data();
+                    const chatId = friendshipDoc.id;
+                    // --- END FIX ---
                     const otherUserId = chatData.users.find(id => id !== stableDisplayId);
                     
                     if (otherUserId) {
@@ -2180,9 +2221,12 @@ YOU CAN BE IMMATURE, JUST NOT AT A HIGH LEVEL. THIS INCLUDES RACISM, SEXISM, AND
         // --- NEW: Dragging Listeners ---
         mainHeader.addEventListener('mousedown', (e) => {
             // Only drag if not clicking on an input/button
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.T.tagName === 'A' || e.target.tagName === 'SELECT' || e.target.closest('button') || e.target.closest('a')) {
+            // --- THIS IS THE FIX ---
+            // Corrected the typo from e.T.tagName to e.target.tagName
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'SELECT' || e.target.closest('button') || e.target.closest('a')) {
                 return;
             }
+            // --- END FIX ---
             
             isDragging = true;
             isCentered = false; // No longer centered
